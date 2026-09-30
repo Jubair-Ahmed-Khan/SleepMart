@@ -12,7 +12,10 @@ class ProductController extends Controller
     public function index(Request $request): View
     {
         $products = Product::query()
-            ->with('category')
+            ->with([
+                'category',
+                'variants',
+            ])
             ->where('is_active', true)
 
             // Search

@@ -102,18 +102,30 @@
 
 
                 {{-- Cart --}}
+                @php
+                    $cartCount = collect(
+                        session('cart', [])
+                    )->sum('quantity');
+                @endphp
                 <a
-                    href="#"
+                    href="{{ route('cart.index') }}"
                     class="relative flex h-10 w-10 items-center justify-center rounded-full text-slate-600 transition hover:bg-slate-100 hover:text-teal-700"
                     title="Cart"
                 >
                     🛒
-
-                    <span
-                        class="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white"
-                    >
-                        0
-                    </span>
+                    @if($cartCount > 0)
+                      <span
+                          class="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white"
+                      >
+                          {{ $cartCount }}
+                      </span>
+                    @else
+                      <span
+                          class="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white"
+                      >
+                          0
+                      </span>
+                    @endif
                 </a>
 
 

@@ -4,282 +4,760 @@
 
 @section('content')
 
-<div class="mx-auto max-w-7xl px-4 py-10 sm:py-14">
 
-    {{-- Breadcrumb --}}
-    <nav class="mb-8 text-sm text-slate-500">
+<div class="bg-gray-50">
+
+{{-- Flash Messages --}}
+<div class="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
+
+    @if(session('success'))
+        <div
+            class="mb-4 rounded-xl border border-green-200
+                   bg-green-50 px-5 py-4 text-sm text-green-700"
+        >
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div
+            class="mb-4 rounded-xl border border-red-200
+                   bg-red-50 px-5 py-4 text-sm text-red-700"
+        >
+            {{ session('error') }}
+        </div>
+    @endif
+
+    @if($errors->any())
+        <div
+            class="mb-4 rounded-xl border border-red-200
+                   bg-red-50 px-5 py-4 text-sm text-red-700"
+        >
+            <ul class="list-disc space-y-1 pl-5">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+</div>
+
+
+{{-- Breadcrumb --}}
+<div class="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
+
+    <nav
+        class="flex flex-wrap items-center gap-2 text-sm text-gray-500"
+        aria-label="Breadcrumb"
+    >
 
         <a
             href="{{ route('home') }}"
-            class="hover:text-teal-700"
+            class="hover:text-indigo-600"
         >
             Home
         </a>
 
-        <span class="mx-2">
-            /
-        </span>
+        <span>/</span>
 
         <a
             href="{{ route('products.index') }}"
-            class="hover:text-teal-700"
+            class="hover:text-indigo-600"
         >
             Shop
         </a>
 
-        <span class="mx-2">
-            /
-        </span>
+        <span>/</span>
 
-        <span class="text-slate-900">
+        @if($product->category)
+            <a
+                href="{{ route(
+                    'products.index',
+                    ['category' => $product->category->slug]
+                ) }}"
+                class="hover:text-indigo-600"
+            >
+                {{ $product->category->name }}
+            </a>
+
+            <span>/</span>
+        @endif
+
+        <span class="font-medium text-gray-900">
             {{ $product->name }}
         </span>
 
     </nav>
 
-
-    {{-- Product --}}
-    <div class="grid gap-10 lg:grid-cols-2">
+</div>
 
 
-        {{-- Product Image --}}
+{{-- Product Details --}}
+<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+
+    <div
+        class="grid grid-cols-1 gap-10 rounded-2xl
+               bg-white p-5 shadow-sm
+               lg:grid-cols-2 lg:p-8"
+    >
+
+        {{-- ========================================================= --}}
+        {{-- LEFT: PRODUCT IMAGE --}}
+        {{-- ========================================================= --}}
+
         <div>
 
-            <div class="aspect-square overflow-hidden rounded-3xl bg-slate-100">
+            <div
+                class="relative overflow-hidden rounded-2xl
+                       bg-gray-100"
+            >
 
+                {{-- Discount Badge --}}
+                @if($product->discount_percentage > 0)
+                    <span
+                        class="absolute left-4 top-4 z-10
+                               rounded-full bg-red-500
+                               px-3 py-1.5 text-xs font-bold
+                               text-white"
+                    >
+                        {{ $product->discount_percentage }}% OFF
+                    </span>
+                @endif
+
+
+                {{-- Product Image --}}
                 @if($product->thumbnail)
 
                     <img
-                        src="{{ asset('storage/' . $product->thumbnail) }}"
+                        id="mainProductImage"
+                        src="{{ asset(
+                            'storage/' . $product->thumbnail
+                        ) }}"
                         alt="{{ $product->name }}"
-                        class="h-full w-full object-cover"
+                        class="h-[420px] w-full object-cover
+                               sm:h-[500px]"
                     >
 
                 @else
 
-                    <div class="flex h-full items-center justify-center">
+                    <div
+                        class="flex h-[420px] items-center
+                               justify-center text-gray-400
+                               sm:h-[500px]"
+                    >
+                        <div class="text-center">
 
-                        @if($product->category->slug === 'mattresses')
-                            <span class="text-[150px]">
+                            <div class="text-6xl">
                                 🛏️
-                            </span>
-                        @else
-                            <span class="text-[150px]">
-                                💤
-                            </span>
-                        @endif
+                            </div>
 
+                            <p class="mt-3 text-sm">
+                                No image available
+                            </p>
+
+                        </div>
                     </div>
 
                 @endif
 
             </div>
 
+
+            {{-- Additional Images --}}
+            @if($product->images->count())
+
+                <div class="mt-4 grid grid-cols-4 gap-3">
+
+                    {{-- Main Thumbnail --}}
+                    @if($product->thumbnail)
+
+                        <button
+                            type="button"
+                            onclick="changeProductImage(
+                                '{{ asset(
+                                    'storage/' .
+                                    $product->thumbnail
+                                ) }}'
+                            )"
+                            class="overflow-hidden rounded-xl
+                                   border-2 border-indigo-500
+                                   bg-gray-100"
+                        >
+                            <img
+                                src="{{ asset(
+                                    'storage/' .
+                                    $product->thumbnail
+                                ) }}"
+                                alt="{{ $product->name }}"
+                                class="h-20 w-full object-cover"
+                            >
+                        </button>
+
+                    @endif
+
+
+                    @foreach($product->images as $image)
+
+                        <button
+                            type="button"
+                            onclick="changeProductImage(
+                                '{{ $image->url }}'
+                            )"
+                            class="overflow-hidden rounded-xl
+                                   border-2 border-transparent
+                                   bg-gray-100 hover:border-indigo-400"
+                        >
+
+                            <img
+                                src="{{ $image->url }}"
+                                alt="{{ $product->name }}"
+                                class="h-20 w-full object-cover"
+                            >
+
+                        </button>
+
+                    @endforeach
+
+                </div>
+
+            @endif
+
         </div>
 
 
-        {{-- Information --}}
-        <div>
+        {{-- ========================================================= --}}
+        {{-- RIGHT: PRODUCT INFORMATION --}}
+        {{-- ========================================================= --}}
 
-            <p class="text-sm font-semibold uppercase tracking-wide text-teal-700">
-                {{ $product->category->name }}
-            </p>
+        <div class="flex flex-col">
+
+            {{-- Category --}}
+            @if($product->category)
+
+                <a
+                    href="{{ route(
+                        'products.index',
+                        ['category' => $product->category->slug]
+                    ) }}"
+                    class="text-sm font-semibold
+                           text-indigo-600 hover:text-indigo-700"
+                >
+                    {{ $product->category->name }}
+                </a>
+
+            @endif
 
 
-            <h1 class="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+            {{-- Product Name --}}
+            <h1
+                class="mt-2 text-3xl font-bold
+                       tracking-tight text-gray-900
+                       sm:text-4xl"
+            >
                 {{ $product->name }}
             </h1>
 
 
             {{-- Rating --}}
-            <div class="mt-4 flex items-center gap-2">
+            <div class="mt-4 flex flex-wrap items-center gap-3">
 
-                <span class="text-lg text-amber-500">
-                    ★★★★★
-                </span>
+                <div class="flex items-center">
 
-                <span class="font-semibold">
+                    @php
+                        $rating = (float) $product->rating;
+                        $fullStars = floor($rating);
+                    @endphp
+
+                    @for($i = 1; $i <= 5; $i++)
+
+                        @if($i <= $fullStars)
+                            <span class="text-lg text-yellow-400">
+                                ★
+                            </span>
+                        @else
+                            <span class="text-lg text-gray-300">
+                                ★
+                            </span>
+                        @endif
+
+                    @endfor
+
+                </div>
+
+                <span class="text-sm font-semibold text-gray-700">
                     {{ number_format($product->rating, 1) }}
                 </span>
 
-                <span class="text-slate-400">
+                <span class="text-sm text-gray-500">
                     ({{ $product->reviews_count }} reviews)
                 </span>
 
             </div>
 
 
-            {{-- Price --}}
-            <div class="mt-6 flex items-center gap-3">
+            {{-- Short Description --}}
+            @if($product->short_description)
 
-                <span class="text-3xl font-bold text-slate-900">
-                    ৳{{ number_format($product->selling_price) }}
-                </span>
-
-                @if($product->regular_price > $product->selling_price)
-
-                    <span class="text-lg text-slate-400 line-through">
-                        ৳{{ number_format($product->regular_price) }}
-                    </span>
-
-                    <span class="rounded-full bg-red-100 px-3 py-1 text-sm font-bold text-red-600">
-                        -{{ $product->discount_percentage }}%
-                    </span>
-
-                @endif
-
-            </div>
-
-
-            {{-- Description --}}
-            <div class="mt-6 border-t border-slate-200 pt-6">
-
-                <p class="leading-7 text-slate-600">
+                <p
+                    class="mt-5 leading-7 text-gray-600"
+                >
                     {{ $product->short_description }}
                 </p>
 
+            @endif
+
+
+            {{-- Price --}}
+            <div class="mt-6">
+
+                <div class="flex flex-wrap items-center gap-3">
+
+                    <span
+                        class="text-3xl font-bold
+                               text-indigo-600"
+                    >
+                        ৳{{ number_format(
+                            $product->selling_price,
+                            0
+                        ) }}
+                    </span>
+
+
+                    @if(
+                        $product->regular_price >
+                        $product->selling_price
+                    )
+
+                        <span
+                            class="text-lg text-gray-400
+                                   line-through"
+                        >
+                            ৳{{ number_format(
+                                $product->regular_price,
+                                0
+                            ) }}
+                        </span>
+
+                        <span
+                            class="rounded-full bg-red-100
+                                   px-3 py-1 text-xs
+                                   font-bold text-red-600"
+                        >
+                            Save ৳{{ number_format(
+                                $product->regular_price -
+                                $product->selling_price,
+                                0
+                            ) }}
+                        </span>
+
+                    @endif
+
+                </div>
+
             </div>
 
 
-            {{-- Variants --}}
-            @if($product->variants->count())
+            {{-- Divider --}}
+            <div class="my-6 border-t border-gray-200"></div>
 
-                <div class="mt-6">
 
-                    <h2 class="font-semibold text-slate-900">
-                        Select Size / Variant
-                    </h2>
+            {{-- ===================================================== --}}
+            {{-- ADD TO CART FORM --}}
+            {{-- ===================================================== --}}
 
-                    <div class="mt-3 grid gap-3 sm:grid-cols-2">
+            @php
+                $hasVariants = $product->variants->isNotEmpty();
 
-                        @foreach($product->variants as $variant)
+                $availableVariants = $product->variants
+                    ->filter(function ($variant) {
+                        return $variant->is_active && $variant->stock > 0;
+                    });
 
-                            <label class="cursor-pointer">
+                $hasAvailableVariant = $availableVariants->isNotEmpty();
 
-                                <input
-                                    type="radio"
-                                    name="variant_id"
-                                    value="{{ $variant->id }}"
-                                    class="peer sr-only"
-                                    @checked($loop->first)
-                                >
+                $canAddToCart = $hasVariants
+                    ? $hasAvailableVariant
+                    : $product->stock > 0;
+            @endphp
+            
+            <form
+                action="{{ route('cart.add', ['product' => $product->slug]) }}"
+                method="POST"
+                class="space-y-5"
+            >
+                @csrf
 
-                                <div
-                                    class="rounded-xl border border-slate-300 p-4 transition peer-checked:border-teal-700 peer-checked:bg-teal-50"
-                                >
 
-                                    <div class="font-semibold text-slate-900">
+                {{-- ================================================= --}}
+                {{-- VARIANT --}}
+                {{-- ================================================= --}}
+
+                @if($hasVariants)
+
+                    <div>
+
+                        <label
+                            for="variant_id"
+                            class="mb-2 block text-sm font-semibold text-gray-900"
+                        >
+                            Choose Size
+                        </label>
+
+                        <select
+                            name="variant_id"
+                            id="variant_id"
+                            {{ $hasAvailableVariant ? 'required' : 'disabled' }}
+                            class="w-full rounded-xl border border-gray-300
+                                  px-4 py-3 text-sm
+                                  focus:border-indigo-500
+                                  focus:ring-indigo-500
+                                  disabled:cursor-not-allowed
+                                  disabled:bg-gray-100
+                                  disabled:text-gray-500"
+                        >
+
+                            @if($hasAvailableVariant)
+
+                                <option value="">
+                                    Select a size
+                                </option>
+
+                                @foreach($availableVariants as $variant)
+
+                                    <option
+                                        value="{{ $variant->id }}"
+                                    >
                                         {{ $variant->name }}
-                                    </div>
 
-                                    <div class="mt-1 text-sm text-slate-500">
-                                        SKU: {{ $variant->sku }}
-                                    </div>
+                                        @if($variant->size)
+                                            — {{ $variant->size }}
+                                        @endif
 
-                                    <div class="mt-2 font-bold text-teal-700">
-                                        ৳{{ number_format($variant->price) }}
-                                    </div>
+                                        @if($variant->thickness)
+                                            — {{ $variant->thickness }}
+                                        @endif
 
-                                    @if($variant->stock > 0)
+                                        — ৳{{ number_format($variant->price, 0) }}
 
-                                        <div class="mt-1 text-xs text-emerald-600">
-                                            In Stock
-                                        </div>
+                                        @if($variant->stock <= 5)
+                                            — Only {{ $variant->stock }} left
+                                        @endif
+                                    </option>
 
-                                    @else
+                                @endforeach
 
-                                        <div class="mt-1 text-xs text-red-600">
-                                            Out of Stock
-                                        </div>
+                            @else
 
-                                    @endif
+                                <option value="">
+                                    All sizes are currently out of stock
+                                </option>
 
-                                </div>
+                            @endif
 
-                            </label>
+                        </select>
 
-                        @endforeach
+                        @if($hasAvailableVariant)
+
+                            <p class="mt-2 text-xs text-gray-500">
+                                Please select your preferred size.
+                            </p>
+
+                        @endif
+
+                    </div>
+
+                @endif
+
+
+                {{-- ================================================= --}}
+                {{-- QUANTITY --}}
+                {{-- ================================================= --}}
+
+                <div>
+
+                    <label
+                        for="quantity"
+                        class="mb-2 block text-sm font-semibold text-gray-900"
+                    >
+                        Quantity
+                    </label>
+
+                    <div
+                        class="flex w-fit items-center overflow-hidden
+                              rounded-xl border border-gray-300
+                              {{ !$canAddToCart ? 'opacity-50' : '' }}"
+                    >
+
+                        <button
+                            type="button"
+                            onclick="decreaseQuantity()"
+                            {{ !$canAddToCart ? 'disabled' : '' }}
+                            class="px-4 py-3 text-lg font-bold text-gray-600
+                                  hover:bg-gray-100
+                                  disabled:cursor-not-allowed"
+                        >
+                            −
+                        </button>
+
+
+                        <input
+                            type="number"
+                            id="quantity"
+                            name="quantity"
+                            value="1"
+                            min="1"
+                            max="20"
+                            {{ !$canAddToCart ? 'disabled' : '' }}
+                            class="w-16 border-x border-gray-300
+                                  text-center
+                                  focus:border-indigo-500
+                                  focus:ring-0
+                                  disabled:cursor-not-allowed
+                                  disabled:bg-gray-100"
+                        >
+
+
+                        <button
+                            type="button"
+                            onclick="increaseQuantity()"
+                            {{ !$canAddToCart ? 'disabled' : '' }}
+                            class="px-4 py-3 text-lg font-bold text-gray-600
+                                  hover:bg-gray-100
+                                  disabled:cursor-not-allowed"
+                        >
+                            +
+                        </button>
 
                     </div>
 
                 </div>
 
-            @endif
+
+                {{-- ================================================= --}}
+                {{-- STOCK MESSAGE --}}
+                {{-- ================================================= --}}
+
+                @if($hasVariants)
+
+                    @if($hasAvailableVariant)
+
+                        <div
+                            class="rounded-xl border border-green-200
+                                  bg-green-50 px-4 py-3"
+                        >
+                            <p
+                                class="text-sm font-semibold text-green-700"
+                            >
+                                ✓ In Stock
+                            </p>
+
+                            <p
+                                class="mt-1 text-xs text-green-600"
+                            >
+                                Available sizes can be selected above.
+                            </p>
+                        </div>
+
+                    @else
+
+                        <div
+                            class="rounded-xl border border-red-200
+                                  bg-red-50 px-4 py-3"
+                        >
+                            <p
+                                class="text-sm font-semibold text-red-700"
+                            >
+                                Currently Out of Stock
+                            </p>
+
+                            <p
+                                class="mt-1 text-xs text-red-600"
+                            >
+                                All available sizes are currently out of stock.
+                            </p>
+                        </div>
+
+                    @endif
+
+                @else
+
+                    @if($product->stock > 0)
+
+                        <div
+                            class="rounded-xl border border-green-200
+                                  bg-green-50 px-4 py-3"
+                        >
+                            <p
+                                class="text-sm font-semibold text-green-700"
+                            >
+                                ✓ In Stock
+                            </p>
+
+                            <p
+                                class="mt-1 text-xs text-green-600"
+                            >
+                                {{ $product->stock }} item(s) available.
+                            </p>
+                        </div>
+
+                    @else
+
+                        <div
+                            class="rounded-xl border border-red-200
+                                  bg-red-50 px-4 py-3"
+                        >
+                            <p
+                                class="text-sm font-semibold text-red-700"
+                            >
+                                Currently Out of Stock
+                            </p>
+                        </div>
+
+                    @endif
+
+                @endif
 
 
-            {{-- Quantity --}}
-            <div class="mt-6">
+                {{-- ================================================= --}}
+                {{-- ADD TO CART BUTTON --}}
+                {{-- ================================================= --}}
 
-                <label class="mb-2 block font-semibold text-slate-900">
-                    Quantity
-                </label>
+                @if($canAddToCart)
 
-                <div class="flex w-32 items-center rounded-xl border border-slate-300">
+                    <button
+                        type="submit"
+                        class="flex w-full items-center justify-center
+                              gap-2 rounded-xl bg-indigo-600
+                              px-6 py-4 text-sm font-bold text-white
+                              shadow-sm transition
+                              hover:bg-indigo-700
+                              focus:outline-none
+                              focus:ring-2
+                              focus:ring-indigo-500
+                              focus:ring-offset-2"
+                    >
+                        <span class="text-lg">
+                            🛒
+                        </span>
+
+                        Add to Cart
+                    </button>
+
+                @else
 
                     <button
                         type="button"
-                        class="flex h-11 w-10 items-center justify-center text-lg"
+                        disabled
+                        class="flex w-full cursor-not-allowed
+                              items-center justify-center
+                              gap-2 rounded-xl bg-gray-300
+                              px-6 py-4 text-sm font-bold
+                              text-gray-500"
                     >
-                        −
+                        <span class="text-lg">
+                            🚫
+                        </span>
+
+                        Out of Stock
                     </button>
 
-                    <input
-                        type="number"
-                        value="1"
-                        min="1"
-                        class="h-11 w-12 border-0 p-0 text-center focus:ring-0"
-                    >
+                @endif
 
-                    <button
-                        type="button"
-                        class="flex h-11 w-10 items-center justify-center text-lg"
-                    >
-                        +
-                    </button>
-
-                </div>
-
-            </div>
+            </form>
 
 
-            {{-- Actions --}}
-            <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+            {{-- ===================================================== --}}
+            {{-- DELIVERY INFORMATION --}}
+            {{-- ===================================================== --}}
 
-                <button
-                    type="button"
-                    class="flex-1 rounded-xl bg-teal-700 px-6 py-4 font-semibold text-white transition hover:bg-teal-800"
+            <div class="mt-6 space-y-3">
+
+                <div
+                    class="flex items-start gap-3
+                           rounded-xl bg-green-50 p-4"
                 >
-                    🛒 Add to Cart
-                </button>
 
-                <button
-                    type="button"
-                    class="flex h-14 w-14 items-center justify-center rounded-xl border border-slate-300 text-2xl transition hover:border-teal-700 hover:text-teal-700"
-                >
-                    ♡
-                </button>
-
-            </div>
-
-
-            {{-- Delivery information --}}
-            <div class="mt-8 rounded-2xl bg-slate-50 p-5">
-
-                <div class="flex gap-4">
-
-                    <div class="text-2xl">
+                    <div class="text-xl">
                         🚚
                     </div>
 
                     <div>
 
-                        <h3 class="font-semibold text-slate-900">
+                        <p
+                            class="text-sm font-semibold
+                                   text-green-800"
+                        >
                             Delivery Across Bangladesh
-                        </h3>
+                        </p>
 
-                        <p class="mt-1 text-sm leading-6 text-slate-500">
-                            Cash on Delivery available.
-                            Delivery charges will be calculated during checkout.
+                        <p
+                            class="mt-1 text-xs
+                                   leading-5 text-green-700"
+                        >
+                            Home delivery is available
+                            throughout Bangladesh.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="flex items-start gap-3
+                           rounded-xl bg-blue-50 p-4"
+                >
+
+                    <div class="text-xl">
+                        💵
+                    </div>
+
+                    <div>
+
+                        <p
+                            class="text-sm font-semibold
+                                   text-blue-800"
+                        >
+                            Cash on Delivery
+                        </p>
+
+                        <p
+                            class="mt-1 text-xs
+                                   leading-5 text-blue-700"
+                        >
+                            Pay when your order arrives.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="flex items-start gap-3
+                           rounded-xl bg-gray-50 p-4"
+                >
+
+                    <div class="text-xl">
+                        🔄
+                    </div>
+
+                    <div>
+
+                        <p
+                            class="text-sm font-semibold
+                                   text-gray-800"
+                        >
+                            Easy Customer Support
+                        </p>
+
+                        <p
+                            class="mt-1 text-xs
+                                   leading-5 text-gray-600"
+                        >
+                            Contact our support team for
+                            product or delivery assistance.
                         </p>
 
                     </div>
@@ -293,34 +771,204 @@
     </div>
 
 
-    {{-- Description --}}
-    <div class="mt-16 border-t border-slate-200 pt-12">
+    {{-- ============================================================= --}}
+    {{-- PRODUCT DESCRIPTION --}}
+    {{-- ============================================================= --}}
 
-        <h2 class="text-2xl font-bold text-slate-900">
+    <div
+        class="mt-10 rounded-2xl bg-white
+               p-6 shadow-sm sm:p-8"
+    >
+
+        <h2
+            class="text-2xl font-bold text-gray-900"
+        >
             Product Description
         </h2>
 
-        <div class="mt-5 max-w-4xl leading-8 text-slate-600">
-            {{ $product->description }}
+
+        <div
+            class="prose prose-gray mt-5 max-w-none
+                   leading-7 text-gray-600"
+        >
+
+            @if($product->description)
+
+                {!! nl2br(e($product->description)) !!}
+
+            @else
+
+                <p>
+                    No detailed description is available
+                    for this product.
+                </p>
+
+            @endif
+
         </div>
 
     </div>
 
 
-    {{-- Related products --}}
+    {{-- ============================================================= --}}
+    {{-- PRODUCT INFORMATION --}}
+    {{-- ============================================================= --}}
+
+    <div
+        class="mt-6 rounded-2xl bg-white
+               p-6 shadow-sm sm:p-8"
+    >
+
+        <h2
+            class="text-2xl font-bold text-gray-900"
+        >
+            Product Information
+        </h2>
+
+
+        <div
+            class="mt-6 grid grid-cols-1 gap-4
+                   sm:grid-cols-2 lg:grid-cols-3"
+        >
+
+            @if($product->sku)
+
+                <div
+                    class="rounded-xl bg-gray-50 p-4"
+                >
+                    <p
+                        class="text-xs font-medium
+                               uppercase tracking-wide
+                               text-gray-500"
+                    >
+                        SKU
+                    </p>
+
+                    <p
+                        class="mt-1 text-sm font-semibold
+                               text-gray-900"
+                    >
+                        {{ $product->sku }}
+                    </p>
+                </div>
+
+            @endif
+
+
+            @if($product->category)
+
+                <div
+                    class="rounded-xl bg-gray-50 p-4"
+                >
+                    <p
+                        class="text-xs font-medium
+                               uppercase tracking-wide
+                               text-gray-500"
+                    >
+                        Category
+                    </p>
+
+                    <p
+                        class="mt-1 text-sm font-semibold
+                               text-gray-900"
+                    >
+                        {{ $product->category->name }}
+                    </p>
+                </div>
+
+            @endif
+
+
+            @if($product->weight)
+
+                <div
+                    class="rounded-xl bg-gray-50 p-4"
+                >
+                    <p
+                        class="text-xs font-medium
+                               uppercase tracking-wide
+                               text-gray-500"
+                    >
+                        Weight
+                    </p>
+
+                    <p
+                        class="mt-1 text-sm font-semibold
+                               text-gray-900"
+                    >
+                        {{ $product->weight }} kg
+                    </p>
+                </div>
+
+            @endif
+
+        </div>
+
+    </div>
+
+
+    {{-- ============================================================= --}}
+    {{-- RELATED PRODUCTS --}}
+    {{-- ============================================================= --}}
+
     @if($relatedProducts->count())
 
-        <section class="mt-16 border-t border-slate-200 pt-12">
+        <section class="mt-12">
 
-            <h2 class="text-2xl font-bold text-slate-900">
-                You May Also Like
-            </h2>
+            <div
+                class="mb-6 flex items-end
+                       justify-between gap-4"
+            >
 
-            <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                <div>
+
+                    <p
+                        class="text-sm font-semibold
+                               text-indigo-600"
+                    >
+                        You may also like
+                    </p>
+
+                    <h2
+                        class="mt-1 text-2xl font-bold
+                               text-gray-900"
+                    >
+                        Related Products
+                    </h2>
+
+                </div>
+
+
+                <a
+                    href="{{ route(
+                        'products.index',
+                        [
+                            'category' =>
+                                $product->category?->slug
+                        ]
+                    ) }}"
+                    class="hidden text-sm font-semibold
+                           text-indigo-600
+                           hover:text-indigo-700
+                           sm:block"
+                >
+                    View All
+                </a>
+
+            </div>
+
+
+            <div
+                class="grid grid-cols-1 gap-6
+                       sm:grid-cols-2
+                       lg:grid-cols-4"
+            >
 
                 @foreach($relatedProducts as $relatedProduct)
 
-                    <x-product-card :product="$relatedProduct" />
+                    <x-product-card
+                        :product="$relatedProduct"
+                    />
 
                 @endforeach
 
@@ -331,5 +979,55 @@
     @endif
 
 </div>
+
+
+</div>
+
+{{-- ============================================================= --}}
+{{-- JAVASCRIPT --}}
+{{-- ============================================================= --}}
+
+<script>
+    function increaseQuantity() {
+        const input = document.getElementById('quantity');
+
+        if (!input || input.disabled) {
+            return;
+        }
+
+        let current = parseInt(input.value) || 1;
+        const max = parseInt(input.max) || 20;
+
+        if (current < max) {
+            input.value = current + 1;
+        }
+    }
+
+
+    function decreaseQuantity() {
+        const input = document.getElementById('quantity');
+
+        if (!input || input.disabled) {
+            return;
+        }
+
+        let current = parseInt(input.value) || 1;
+        const min = parseInt(input.min) || 1;
+
+        if (current > min) {
+            input.value = current - 1;
+        }
+    }
+
+
+    function changeProductImage(imageUrl) {
+        const mainImage =
+            document.getElementById('mainProductImage');
+
+        if (mainImage) {
+            mainImage.src = imageUrl;
+        }
+    }
+</script>
 
 @endsection
