@@ -1,38 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
-    <meta charset="UTF-8">
+
+    <meta charset="utf-8">
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <meta
-        name="csrf-token"
-        content="{{ csrf_token() }}"
+        content="width=device-width, initial-scale=1"
     >
 
     <title>
         @yield('title', 'SleepMart')
     </title>
 
+    <meta
+        name="description"
+        content="SleepMart - Quality mattresses and pillows in Bangladesh"
+    >
+
     @vite([
         'resources/css/app.css',
         'resources/js/app.js'
     ])
+
 </head>
 
-<body class="bg-slate-50 text-slate-900">
+<body class="font-sans antialiased bg-gray-50 text-gray-900">
 
-    @include('layouts.partials.navbar')
+    {{-- Header --}}
+    @include('layouts.header')
 
-    <main>
+    {{-- Page Content --}}
+    <main class="min-h-screen">
         @yield('content')
     </main>
 
-    @include('layouts.partials.footer')
+    {{-- Footer --}}
+    @include('layouts.footer')
 
 </body>
 

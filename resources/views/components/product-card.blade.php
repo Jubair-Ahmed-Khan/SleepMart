@@ -1,12 +1,8 @@
-@props(['product'])
+@props([
+    'product',
+])
 
 @php
-    /*
-    |--------------------------------------------------------------------------
-    | Variant / Stock Information
-    |--------------------------------------------------------------------------
-    */
-
     $hasVariants = $product->variants->isNotEmpty();
 
     $availableVariants = $product->variants->filter(function ($variant) {
@@ -15,118 +11,119 @@
 
     $hasAvailableVariant = $availableVariants->isNotEmpty();
 
-    /*
-    |--------------------------------------------------------------------------
-    | Can Add To Cart
-    |--------------------------------------------------------------------------
-    */
-
-    $canAddDirectly = !$hasVariants && $product->stock > 0;
-
-    $hasAvailableOption = $hasVariants && $hasAvailableVariant;
+    $canAddDirectly =
+        !$hasVariants &&
+        $product->stock > 0;
 
     $isOutOfStock =
         (!$hasVariants && $product->stock <= 0) ||
         ($hasVariants && !$hasAvailableVariant);
+
+    if ($hasVariants && $hasAvailableVariant) {
+        $startingPrice = $availableVariants->min('price');
+    } else {
+        $startingPrice = $product->selling_price;
+    }
 @endphp
 
 
 <div
-    class="group overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+    class="bg-white rounded-2xl overflow-hidden
+           border border-gray-100
+           hover:shadow-xl transition duration-300"
 >
 
-    {{-- ============================================================
-        IMAGE
-    ============================================================= --}}
-
+    {{-- Product Image --}}
     <a
         href="{{ route('products.show', $product->slug) }}"
-        class="relative block aspect-square overflow-hidden bg-slate-100"
+        class="block"
     >
 
-        @if($product->thumbnail)
+        <div class="relative h-64 bg-gray-100 overflow-hidden">
 
-            <img
-                src="{{ asset('storage/' . $product->thumbnail) }}"
-                alt="{{ $product->name }}"
-                class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-            >
+            @if($product->thumbnail)
 
-        @else
+                <img
+                    src="{{ asset('storage/' . $product->thumbnail) }}"
+                    alt="{{ $product->name }}"
+                    class="w-full h-full object-cover
+                           hover:scale-105
+                           transition duration-500"
+                >
 
-            <div
-                class="flex h-full items-center justify-center bg-gradient-to-br from-teal-50 to-slate-100"
-            >
+            @else
 
-                @if($product->category->slug === 'mattresses')
+                <div
+                    class="w-full h-full flex items-center
+                           justify-center text-6xl"
+                >
+                    🛏️
+                </div>
 
-                    <span class="text-8xl">
-                        🛏️
-                    </span>
-
-                @else
-
-                    <span class="text-8xl">
-                        💤
-                    </span>
-
-                @endif
-
-            </div>
-
-        @endif
+            @endif
 
 
-        {{-- Discount --}}
+            {{-- Featured Badge --}}
+            @if($product->is_featured)
 
-        @if($product->discount_percentage > 0)
+                <span
+                    class="absolute top-3 left-3
+                           px-3 py-1 rounded-full
+                           bg-teal-600 text-white
+                           text-xs font-semibold"
+                >
+                    Featured
+                </span>
 
-            <span
-                class="absolute left-3 top-3 rounded-full bg-red-500 px-3 py-1 text-xs font-bold text-white"
-            >
-                -{{ $product->discount_percentage }}%
-            </span>
-
-        @endif
+            @endif
 
 
-        {{-- Wishlist --}}
+            {{-- Discount Badge --}}
+            @if($product->discount_percentage > 0)
 
-        <button
-            type="button"
-            class="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-white text-xl shadow-md transition hover:bg-teal-50 hover:text-teal-700"
-            title="Add to wishlist"
-        >
-            ♡
-        </button>
+                <span
+                    class="absolute top-3 right-3
+                           px-3 py-1 rounded-full
+                           bg-red-500 text-white
+                           text-xs font-bold"
+                >
+                    -{{ $product->discount_percentage }}%
+                </span>
+
+            @endif
+
+        </div>
 
     </a>
 
 
-    {{-- ============================================================
-        CONTENT
-    ============================================================= --}}
-
-    <div class="p-4">
+    {{-- Product Information --}}
+    <div class="p-5">
 
         {{-- Category --}}
+        @if($product->category)
 
-        <p
-            class="text-xs font-semibold uppercase tracking-wide text-teal-700"
-        >
-            {{ $product->category->name }}
-        </p>
+            <p
+                class="text-xs font-semibold
+                       text-teal-600 uppercase
+                       tracking-wide"
+            >
+                {{ $product->category->name }}
+            </p>
+
+        @endif
 
 
         {{-- Product Name --}}
-
         <a
             href="{{ route('products.show', $product->slug) }}"
-            class="mt-1 block"
         >
 
             <h3
-                class="line-clamp-2 min-h-[3rem] font-semibold text-slate-900 transition hover:text-teal-700"
+                class="mt-2 text-lg font-bold
+                       text-gray-900
+                       hover:text-teal-600
+                       transition line-clamp-2"
             >
                 {{ $product->name }}
             </h3>
@@ -134,200 +131,164 @@
         </a>
 
 
-        {{-- ========================================================
-            RATING
-        ========================================================= --}}
+        {{-- Short Description --}}
+        @if($product->short_description)
 
-        <div class="mt-2 flex items-center gap-1 text-sm">
+            <p
+                class="mt-2 text-sm text-gray-500
+                       line-clamp-2"
+            >
+                {{ $product->short_description }}
+            </p>
 
-            <span class="text-amber-500">
-                ★
-            </span>
+        @endif
 
-            <span class="font-medium">
-                {{ number_format($product->rating, 1) }}
-            </span>
 
-            <span class="text-slate-400">
+        {{-- Rating --}}
+        <div class="mt-3 flex items-center gap-2">
+
+            <div class="flex items-center text-yellow-400">
+                ★★★★★
+            </div>
+
+            <span class="text-xs text-gray-500">
+                {{ number_format((float) $product->rating, 1) }}
                 ({{ $product->reviews_count }})
             </span>
 
         </div>
 
 
-        {{-- ========================================================
-            PRICE
-        ========================================================= --}}
-
-        <div class="mt-3 flex flex-wrap items-center gap-2">
+        {{-- Price --}}
+        <div class="mt-4">
 
             @if($hasVariants)
 
-              @php
-                  $variantPrices = $availableVariants->pluck('price');
-
-                  $startingPrice = $variantPrices->min();
-              @endphp
-
-              @if($startingPrice !== null)
-
-                  <span class="text-sm text-slate-500">
-                      From
-                  </span>
-
-                  <span class="text-xl font-bold text-slate-900">
-                      ৳{{ number_format($startingPrice) }}
-                  </span>
-
-              @else
-
-                  <span class="text-xl font-bold text-slate-900">
-                      ৳{{ number_format($product->selling_price) }}
-                  </span>
-
-              @endif
-
-            @else
-
-                <span class="text-xl font-bold text-slate-900">
-                    ৳{{ number_format($product->selling_price) }}
+                <span class="text-xs text-gray-500">
+                    From
                 </span>
 
-                @if($product->regular_price > $product->selling_price)
+            @endif
 
-                    <span class="text-sm text-slate-400 line-through">
-                        ৳{{ number_format($product->regular_price) }}
-                    </span>
+            <span class="text-xl font-bold text-gray-900">
+                ৳{{ number_format((float) $startingPrice, 0) }}
+            </span>
 
-                @endif
+
+            {{-- Regular Price --}}
+            @if(
+                !$hasVariants &&
+                $product->regular_price > $product->selling_price
+            )
+
+                <span
+                    class="ml-2 text-sm text-gray-400
+                           line-through"
+                >
+                    ৳{{ number_format((float) $product->regular_price, 0) }}
+                </span>
 
             @endif
 
         </div>
 
 
-        {{-- ========================================================
-            STOCK STATUS
-        ========================================================= --}}
+        {{-- Stock Status --}}
+        @if(!$isOutOfStock)
 
-        <div class="mt-2">
+            @if(!$hasVariants && $product->stock <= 5)
 
-            @if($hasVariants)
+                <p class="mt-2 text-xs text-orange-600 font-medium">
+                    Only {{ $product->stock }} left in stock
+                </p>
 
-                @if($hasAvailableVariant)
+            @elseif($hasVariants)
 
-                    <span class="text-xs font-medium text-emerald-600">
-                        ✓ Available
-                    </span>
-
-                @else
-
-                    <span class="text-xs font-medium text-red-600">
-                        Out of Stock
-                    </span>
-
-                @endif
-
-            @else
-
-                @if($product->stock > 0)
-
-                    <span class="text-xs font-medium text-emerald-600">
-                        ✓ In Stock
-                    </span>
-
-                @else
-
-                    <span class="text-xs font-medium text-red-600">
-                        Out of Stock
-                    </span>
-
-                @endif
+                <p class="mt-2 text-xs text-green-600 font-medium">
+                    Available
+                </p>
 
             @endif
-
-        </div>
-
-
-        {{-- ========================================================
-            CART ACTION
-        ========================================================= --}}
-
-        @if($canAddDirectly)
-
-            {{-- ====================================================
-                NO VARIANT
-                Directly Add 1 Item To Cart
-            ===================================================== --}}
-
-            <form
-                action="{{ route('cart.add', $product->slug) }}"
-                method="POST"
-                class="mt-4"
-            >
-
-                @csrf
-
-                <input
-                    type="hidden"
-                    name="quantity"
-                    value="1"
-                >
-
-                <button
-                    type="submit"
-                    class="flex w-full items-center justify-center gap-2 rounded-xl bg-teal-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-teal-800"
-                >
-                    <span>🛒</span>
-                    <span>Add to Cart</span>
-                </button>
-
-            </form>
-
-
-        @elseif($hasAvailableOption)
-
-            {{-- ====================================================
-                HAS VARIANTS
-                Customer Must Select Size / Thickness
-            ===================================================== --}}
-
-            <a
-                href="{{ route('products.show', $product->slug) }}"
-                class="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-teal-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-teal-800"
-            >
-
-                <span>🛒</span>
-
-                <span>
-                    <!-- Select Options -->
-                     Add to Cart
-                </span>
-
-            </a>
-
 
         @else
 
-            {{-- ====================================================
-                OUT OF STOCK
-            ===================================================== --}}
-
-            <button
-                type="button"
-                disabled
-                class="mt-4 flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-slate-300 px-4 py-3 text-sm font-semibold text-slate-500"
-            >
-
-                <span>🚫</span>
-
-                <span>
-                    Out of Stock
-                </span>
-
-            </button>
+            <p class="mt-2 text-xs text-red-500 font-medium">
+                Currently unavailable
+            </p>
 
         @endif
+
+
+        {{-- Action --}}
+        <div class="mt-5">
+
+            {{-- Product without variants --}}
+            @if($canAddDirectly)
+
+                <form
+                    action="{{ route('cart.add', $product->slug) }}"
+                    method="POST"
+                >
+
+                    @csrf
+
+                    <input
+                        type="hidden"
+                        name="quantity"
+                        value="1"
+                    >
+
+                    <button
+                        type="submit"
+                        class="w-full inline-flex
+                               items-center justify-center
+                               gap-2 px-4 py-3
+                               bg-teal-600 text-white
+                               rounded-xl font-semibold
+                               hover:bg-teal-700
+                               transition"
+                    >
+                        🛒 Add to Cart
+                    </button>
+
+                </form>
+
+
+            {{-- Product with available variants --}}
+            @elseif($hasAvailableVariant)
+
+                <a
+                    href="{{ route('products.show', $product->slug) }}"
+                    class="w-full inline-flex
+                           items-center justify-center
+                           gap-2 px-4 py-3
+                           bg-teal-600 text-white
+                           rounded-xl font-semibold
+                           hover:bg-teal-700
+                           transition"
+                >
+                    <!-- 🛒 Select Options -->
+                    🛒 Add to Cart
+                </a>
+
+
+            {{-- Out of stock --}}
+            @else
+
+                <button
+                    type="button"
+                    disabled
+                    class="w-full px-4 py-3
+                           bg-gray-200 text-gray-500
+                           rounded-xl font-semibold
+                           cursor-not-allowed"
+                >
+                    Out of Stock
+                </button>
+
+            @endif
+
+        </div>
 
     </div>
 
