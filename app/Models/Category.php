@@ -14,6 +14,7 @@ class Category extends Model
         'name',
         'slug',
         'image',
+        'icon',
         'description',
         'is_active',
         'sort_order',
@@ -26,5 +27,14 @@ class Category extends Model
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        if (!$this->image) {
+            return null;
+        }
+
+        return asset('storage/' . $this->image);
     }
 }

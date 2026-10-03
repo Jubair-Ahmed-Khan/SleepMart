@@ -1,3 +1,19 @@
+@if(session('success'))
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        <div class="rounded-xl bg-green-50 border border-green-200 px-4 py-3 text-green-700">
+            {{ session('success') }}
+        </div>
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        <div class="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-red-700">
+            {{ session('error') }}
+        </div>
+    </div>
+@endif
+
 @extends('layouts.app')
 
 @section('title', 'SleepMart - Better Sleep. Better Life.')
@@ -5,7 +21,7 @@
 @section('content')
 
     {{-- Hero --}}
-    <section class="bg-gradient-to-br from-teal-50 via-white to-cyan-50">
+    <!-- <section class="bg-gradient-to-br from-teal-50 via-white to-cyan-50">
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -113,11 +129,138 @@
 
         </div>
 
+    </section> -->
+    <section class="relative overflow-hidden bg-gradient-to-br from-teal-900 via-teal-800 to-cyan-800">
+
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-white"></div>
+            <div class="absolute -bottom-32 -left-20 w-80 h-80 rounded-full bg-cyan-300"></div>
+        </div>
+
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <div class="grid lg:grid-cols-2 gap-12 items-center min-h-[620px] py-16 lg:py-20">
+
+                {{-- Text --}}
+                <div class="text-center lg:text-left">
+
+                    <span
+                        class="inline-flex items-center px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white text-sm font-semibold"
+                    >
+                        ✨ Better Sleep. Better Life.
+                    </span>
+
+                    <h1
+                        class="mt-6 text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight"
+                    >
+                        Sleep Better.
+                        <span class="text-cyan-300">
+                            Wake Better.
+                        </span>
+                    </h1>
+
+                    <p
+                        class="mt-6 text-lg text-teal-100 max-w-xl mx-auto lg:mx-0 leading-relaxed"
+                    >
+                        Discover quality mattresses and pillows designed
+                        to bring comfort, support and restful sleep to your home.
+                    </p>
+
+                    <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+
+                        <a
+                            href="{{ route('products.index') }}"
+                            class="inline-flex items-center justify-center px-7 py-4 bg-white text-teal-800 rounded-xl font-bold hover:bg-gray-100 transition shadow-lg"
+                        >
+                            Shop Now
+                            <span class="ml-2">→</span>
+                        </a>
+
+                        <a
+                            href="#categories"
+                            class="inline-flex items-center justify-center px-7 py-4 border border-white/30 text-white rounded-xl font-bold hover:bg-white/10 transition"
+                        >
+                            Explore Categories
+                        </a>
+
+                    </div>
+
+                    {{-- Benefits --}}
+                    <div class="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-5">
+
+                        <div class="text-center lg:text-left">
+                            <div class="text-2xl">🚚</div>
+                            <p class="mt-2 text-sm font-semibold text-white">
+                                Bangladesh Delivery
+                            </p>
+                        </div>
+
+                        <div class="text-center lg:text-left">
+                            <div class="text-2xl">💳</div>
+                            <p class="mt-2 text-sm font-semibold text-white">
+                                Cash on Delivery
+                            </p>
+                        </div>
+
+                        <div class="text-center lg:text-left">
+                            <div class="text-2xl">⭐</div>
+                            <p class="mt-2 text-sm font-semibold text-white">
+                                Quality Products
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {{-- Visual --}}
+                <div class="hidden sm:block">
+
+                    <div class="relative max-w-lg mx-auto">
+
+                        <div
+                            class="absolute inset-0 bg-cyan-300/20 rounded-[3rem] blur-3xl"
+                        ></div>
+
+                        <div
+                            class="relative bg-white/10 backdrop-blur-sm border border-white/20 rounded-[3rem] p-6"
+                        >
+
+                            <div
+                                class="aspect-square rounded-[2.5rem] bg-gradient-to-br from-white/20 to-white/5 flex items-center justify-center"
+                            >
+                                <div class="text-center">
+
+                                    <div class="text-9xl">
+                                        🛏️
+                                    </div>
+
+                                    <p class="mt-5 text-2xl font-bold text-white">
+                                        Comfort Starts Here
+                                    </p>
+
+                                    <p class="mt-2 text-teal-100">
+                                        Premium sleep essentials for your home
+                                    </p>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </section>
 
   
     {{-- Categories --}}
-    <section class="py-20 bg-white">
+    <section id="categories" class="py-20 bg-white">
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -152,19 +295,26 @@
 
             @else
 
-                <div class="text-center py-12">
+                <div class="bg-white rounded-2xl border border-gray-100 py-16 px-6 text-center">
 
-                    <div class="text-5xl mb-4">
+                    <div class="text-6xl">
                         🛍️
                     </div>
 
-                    <h3 class="text-xl font-semibold text-gray-800">
-                        No categories available
+                    <h3 class="mt-5 text-xl font-bold text-gray-900">
+                        Categories are coming soon
                     </h3>
 
                     <p class="mt-2 text-gray-500">
-                        Please check back soon.
+                        Our product categories will appear here shortly.
                     </p>
+
+                    <a
+                        href="{{ route('products.index') }}"
+                        class="inline-flex mt-6 px-6 py-3 bg-teal-600 text-white rounded-xl font-semibold hover:bg-teal-700 transition"
+                    >
+                        Browse Products
+                    </a>
 
                 </div>
 
@@ -172,6 +322,52 @@
 
         </div>
 
+    </section>
+
+    {{-- Promotional Banner --}}
+    <section class="py-8 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <div
+                class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-cyan-600 to-teal-700"
+            >
+
+                <div class="absolute -right-20 -top-20 w-72 h-72 rounded-full bg-white/10"></div>
+                <div class="absolute -left-20 -bottom-32 w-80 h-80 rounded-full bg-white/10"></div>
+
+                <div
+                    class="relative px-6 sm:px-10 lg:px-14 py-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8"
+                >
+
+                    <div class="text-white">
+
+                        <span class="text-sm font-semibold uppercase tracking-wider text-cyan-100">
+                            SleepMart Special
+                        </span>
+
+                        <h2 class="mt-2 text-2xl sm:text-3xl font-bold">
+                            Upgrade Your Sleep Today
+                        </h2>
+
+                        <p class="mt-2 text-teal-100 max-w-xl">
+                            Explore our mattress and pillow collection
+                            and find the comfort that's right for you.
+                        </p>
+
+                    </div>
+
+                    <a
+                        href="{{ route('products.index') }}"
+                        class="inline-flex items-center justify-center px-6 py-3 bg-white text-teal-700 rounded-xl font-bold hover:bg-gray-100 transition whitespace-nowrap"
+                    >
+                        Shop Collection →
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
     </section>
 
 
@@ -222,27 +418,26 @@
 
               @else
 
-                  <div class="bg-white rounded-2xl py-16 text-center">
+                  <div class="bg-white rounded-2xl border border-gray-100 py-16 px-6 text-center">
 
-                      <div class="text-5xl mb-4">
+                      <div class="text-6xl">
                           🛏️
                       </div>
 
-                      <h3 class="text-xl font-semibold text-gray-800">
-                          No featured products available
+                      <h3 class="mt-5 text-xl font-bold text-gray-900">
+                          Featured products coming soon
                       </h3>
 
-                      <p class="mt-2 text-gray-500">
-                          Featured products will appear here.
+                      <p class="mt-2 text-gray-500 max-w-md mx-auto">
+                          We're preparing our featured sleep collection.
+                          You can still browse all available products.
                       </p>
 
                       <a
                           href="{{ route('products.index') }}"
-                          class="inline-flex mt-6 px-6 py-3
-                                bg-teal-600 text-white rounded-xl
-                                font-semibold hover:bg-teal-700"
+                          class="inline-flex mt-6 px-6 py-3 bg-teal-600 text-white rounded-xl font-semibold hover:bg-teal-700 transition"
                       >
-                          Browse All Products
+                          Browse Products
                       </a>
 
                   </div>
@@ -329,7 +524,7 @@
 
 
     {{-- CTA --}}
-    <section class="py-20">
+    <!-- <section class="py-20">
 
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -354,6 +549,36 @@
 
         </div>
 
-    </section>
+    </section> -->
+    <!-- <section class="py-20 bg-white">
+
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+
+            <div class="w-16 h-16 mx-auto rounded-2xl bg-teal-50 flex items-center justify-center text-3xl">
+                💤
+            </div>
+
+            <h2 class="mt-6 text-3xl sm:text-4xl font-extrabold text-gray-900">
+                Ready for Better Sleep?
+            </h2>
+
+            <p class="mt-4 text-gray-500 max-w-2xl mx-auto">
+                Explore our collection of mattresses and pillows
+                and choose the comfort your body deserves.
+            </p>
+
+            <div class="mt-8">
+                <a
+                    href="{{ route('products.index') }}"
+                    class="inline-flex items-center justify-center px-8 py-4 bg-teal-600 text-white rounded-xl font-bold hover:bg-teal-700 transition shadow-lg"
+                >
+                    Explore SleepMart
+                    <span class="ml-2">→</span>
+                </a>
+            </div>
+
+        </div>
+
+    </section> -->
 
 @endsection

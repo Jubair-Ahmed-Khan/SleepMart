@@ -41,7 +41,13 @@
 
         <div class="relative h-64 bg-gray-100 overflow-hidden">
 
-            @if($product->thumbnail)
+            @if($product->primary_image_url)
+                <img
+                    src="{{ $product->primary_image_url }}"
+                    alt="{{ $product->name }}"
+                    class="w-full h-full object-cover hover:scale-105 transition duration-500"
+                >
+            @elseif($product->thumbnail)
 
                 <img
                     src="{{ asset('storage/' . $product->thumbnail) }}"

@@ -15,6 +15,7 @@ class ProductController extends Controller
             ->with([
                 'category',
                 'variants',
+                'images',
             ])
             ->where('is_active', true)
 

@@ -106,7 +106,7 @@
         {{-- LEFT: PRODUCT IMAGE --}}
         {{-- ========================================================= --}}
 
-        <div>
+        <!-- <div>
 
             <div
                 class="relative overflow-hidden rounded-2xl
@@ -215,6 +215,63 @@
                                 class="h-20 w-full object-cover"
                             >
 
+                        </button>
+
+                    @endforeach
+
+                </div>
+
+            @endif
+
+        </div> -->
+        <div>
+
+            {{-- Main Image --}}
+            <div class="aspect-square rounded-3xl overflow-hidden bg-gray-100">
+                @if($product->images->count())
+                    @php
+                        $primaryImage = $product->images
+                            ->firstWhere('is_primary', true)
+                            ?? $product->images->first();
+                    @endphp
+
+                    <img
+                        id="mainProductImage"
+                        src="{{ $primaryImage->url }}"
+                        alt="{{ $product->name }}"
+                        class="w-full h-full object-cover"
+                    >
+                @elseif($product->thumbnail)
+                    <img
+                        id="mainProductImage"
+                        src="{{ asset('storage/' . $product->thumbnail) }}"
+                        alt="{{ $product->name }}"
+                        class="w-full h-full object-cover"
+                    >
+                @else
+                    <div class="w-full h-full flex items-center justify-center text-7xl">
+                        🛏️
+                    </div>
+                @endif
+            </div>
+
+            {{-- Thumbnails --}}
+            @if($product->images->count() > 1)
+
+                <div class="mt-4 grid grid-cols-5 sm:grid-cols-6 gap-3">
+
+                    @foreach($product->images as $image)
+
+                        <button
+                            type="button"
+                            onclick="changeProductImage('{{ $image->url }}')"
+                            class="aspect-square rounded-xl overflow-hidden border-2 border-transparent hover:border-teal-500 transition"
+                        >
+                            <img
+                                src="{{ $image->url }}"
+                                alt="{{ $product->name }}"
+                                class="w-full h-full object-cover"
+                            >
                         </button>
 
                     @endforeach

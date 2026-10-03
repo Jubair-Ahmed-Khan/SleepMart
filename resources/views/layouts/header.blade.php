@@ -43,12 +43,26 @@
                 </a>
 
                 @auth
-                    <a
-                        href="{{ route('dashboard') }}"
-                        class="text-sm font-medium text-gray-700 hover:text-teal-600 transition"
-                    >
-                        Dashboard
-                    </a>
+                    @if(!auth()->user()->isAdmin())
+                        <a
+                            href="{{ route('dashboard') }}"
+                            class="text-sm font-medium text-gray-700 hover:text-teal-600 transition"
+                        >
+                            Dashboard
+                        </a>
+                    @endif
+                @endauth
+                @auth
+                    @if(auth()->user()->isAdmin())
+                        <a
+                            href="{{ route('admin.dashboard') }}"
+                            class="px-4 py-2 rounded-lg text-sm font-semibold
+                                text-teal-600
+                                hover:bg-teal-50 transition"
+                        >
+                            Admin
+                        </a>
+                    @endif
                 @endauth
             </nav>
 
@@ -107,6 +121,19 @@
                 {{-- Authenticated --}}
                 @auth
                     <div class="hidden sm:flex items-center gap-3">
+
+                        <!-- @if(auth()->user()->isAdmin())
+
+                            <a
+                                href="{{ route('admin.dashboard') }}"
+                                class="px-4 py-2 rounded-lg text-sm font-semibold
+                                    text-teal-600
+                                    hover:bg-teal-50 transition"
+                            >
+                                ⚙️ Admin
+                            </a>
+
+                        @endif -->
 
                         <div class="text-right">
                             <div class="text-sm font-semibold text-gray-900">

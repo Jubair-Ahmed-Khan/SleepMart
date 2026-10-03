@@ -1,10 +1,17 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
+
+
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\ProductImageController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -81,7 +88,7 @@ Route::delete(
 Route::get('/dashboard', function () {
     return view('dashboard');
 })
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'verified', 'customer'])
     ->name('dashboard');
 
 
@@ -115,5 +122,48 @@ Route::middleware('auth')->group(function () {
 | Authentication
 |--------------------------------------------------------------------------
 */
+
+
+Route::middleware(['auth', 'admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+
+        Route::get(
+            '/dashboard',
+            [AdminController::class, 'dashboard']
+        )->name('dashboard');
+
+        Route::get(
+            '/products',
+            [AdminProductController::class, 'index']
+        )->name('products.index');
+
+        Route::get(
+            '/products/{product}/images',
+            [ProductImageController::class, 'index']
+        )->name('products.images.index');
+
+        Route::post(
+            '/products/{product}/images',
+            [ProductImageController::class, 'store']
+        )->name('products.images.store');
+
+        Route::post(
+            '/products/{product}/images/{image}/primary',
+            [ProductImageController::class, 'primary']
+        )->name('products.images.primary');
+
+        Route::patch(
+            '/products/{product}/images/order',
+            [ProductImageController::class, 'updateOrder']
+        )->name('products.images.order');
+
+        Route::delete(
+            '/products/{product}/images/{image}',
+            [ProductImageController::class, 'destroy']
+        )->name('products.images.destroy');
+    }
+);
 
 require __DIR__.'/auth.php';

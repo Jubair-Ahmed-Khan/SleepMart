@@ -79,4 +79,16 @@ class Product extends Model
 
         return asset('images/product-placeholder.svg');
     }
+
+    public function getPrimaryImageUrlAttribute(): ?string
+    {
+        $image = $this->images
+            ->firstWhere('is_primary', true);
+
+        if (!$image) {
+            $image = $this->images->first();
+        }
+
+        return $image?->url;
+    }
 }

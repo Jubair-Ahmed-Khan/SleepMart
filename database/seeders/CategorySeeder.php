@@ -10,20 +10,32 @@ class CategorySeeder extends Seeder
 {
     public function run(): void
     {
-        Category::create([
-            'name' => 'Mattresses',
-            'slug' => 'mattresses',
-            'description' => 'Comfortable mattresses for restful sleep.',
-            'is_active' => true,
-            'sort_order' => 1,
-        ]);
+        $categories = [
+            [
+                'name' => 'Mattresses',
+                'slug' => 'mattresses',
+                'icon' => '🛏️',
+                'image' => null,
+                'description' => 'Comfortable mattresses designed for better sleep.',
+                'is_active' => true,
+                'sort_order' => 1,
+            ],
+            [
+                'name' => 'Pillows',
+                'slug' => 'pillows',
+                'icon' => '💤',
+                'image' => null,
+                'description' => 'Supportive and comfortable pillows for restful sleep.',
+                'is_active' => true,
+                'sort_order' => 2,
+            ],
+        ];
 
-        Category::create([
-            'name' => 'Pillows',
-            'slug' => 'pillows',
-            'description' => 'Comfortable pillows for better head and neck support.',
-            'is_active' => true,
-            'sort_order' => 2,
-        ]);
+        foreach ($categories as $category) {
+            Category::updateOrCreate(
+                ['slug' => $category['slug']],
+                $category
+            );
+        }
     }
 }
