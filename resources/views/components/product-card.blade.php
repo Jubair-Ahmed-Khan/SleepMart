@@ -27,26 +27,32 @@
 @endphp
 
 
+{{-- Product Card --}}
 <div
     class="bg-white rounded-2xl overflow-hidden
            border border-gray-100
-           hover:shadow-xl transition duration-300"
+           hover:shadow-xl transition duration-300
+           flex flex-col h-full"
 >
 
     {{-- Product Image --}}
     <a
         href="{{ route('products.show', $product->slug) }}"
-        class="block"
+        class="block shrink-0"
     >
 
         <div class="relative h-64 bg-gray-100 overflow-hidden">
 
             @if($product->primary_image_url)
+
                 <img
                     src="{{ $product->primary_image_url }}"
                     alt="{{ $product->name }}"
-                    class="w-full h-full object-cover hover:scale-105 transition duration-500"
+                    class="w-full h-full object-cover
+                           hover:scale-105
+                           transition duration-500"
                 >
+
             @elseif($product->thumbnail)
 
                 <img
@@ -104,7 +110,7 @@
 
 
     {{-- Product Information --}}
-    <div class="p-5">
+    <div class="p-5 flex flex-col flex-1">
 
         {{-- Category --}}
         @if($product->category)
@@ -117,19 +123,27 @@
                 {{ $product->category->name }}
             </p>
 
+        @else
+
+            {{-- Keep category area consistent --}}
+            <div class="h-4"></div>
+
         @endif
 
 
         {{-- Product Name --}}
         <a
             href="{{ route('products.show', $product->slug) }}"
+            class="block"
         >
 
             <h3
                 class="mt-2 text-lg font-bold
                        text-gray-900
                        hover:text-teal-600
-                       transition line-clamp-2"
+                       transition
+                       line-clamp-2
+                       min-h-[3.5rem]"
             >
                 {{ $product->name }}
             </h3>
@@ -142,10 +156,15 @@
 
             <p
                 class="mt-2 text-sm text-gray-500
-                       line-clamp-2"
+                       line-clamp-2
+                       min-h-[2.5rem]"
             >
                 {{ $product->short_description }}
             </p>
+
+        @else
+
+            <div class="mt-2 min-h-[2.5rem]"></div>
 
         @endif
 
@@ -214,6 +233,11 @@
                     Available
                 </p>
 
+            @else
+
+                {{-- Keep stock area consistent --}}
+                <div class="mt-2 h-4"></div>
+
             @endif
 
         @else
@@ -226,7 +250,7 @@
 
 
         {{-- Action --}}
-        <div class="mt-5">
+        <div class="mt-auto pt-5">
 
             {{-- Product without variants --}}
             @if($canAddDirectly)
@@ -273,7 +297,6 @@
                            hover:bg-teal-700
                            transition"
                 >
-                    <!-- 🛒 Select Options -->
                     🛒 Add to Cart
                 </a>
 

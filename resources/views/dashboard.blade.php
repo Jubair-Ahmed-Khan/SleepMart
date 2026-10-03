@@ -130,6 +130,37 @@
 
             </a>
 
+            {{-- Orders --}}
+            <a
+                href="{{ route('orders.index') }}"
+                class="group rounded-2xl border border-gray-200
+                    bg-white p-6 shadow-sm
+                    hover:-translate-y-1
+                    hover:border-teal-200
+                    hover:shadow-md transition"
+            >
+
+                <div class="flex h-12 w-12 items-center
+                            justify-center rounded-xl
+                            bg-teal-50 text-2xl">
+                    📦
+                </div>
+
+                <h3 class="mt-5 text-lg font-bold text-gray-900">
+                    My Orders
+                </h3>
+
+                <p class="mt-2 text-sm text-gray-500">
+                    View your order history and track order status.
+                </p>
+
+                <span class="mt-4 inline-block text-sm
+                            font-semibold text-teal-600">
+                    View Orders →
+                </span>
+
+            </a>
+
 
             {{-- Profile --}}
             <a

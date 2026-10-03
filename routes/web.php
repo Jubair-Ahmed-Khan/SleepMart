@@ -11,6 +11,9 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\ProductImageController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\LocationController;
+use App\Http\Controllers\OrderController;
 
 
 /*
@@ -21,6 +24,22 @@ use App\Http\Controllers\Admin\ProductController as AdminProductController;
 
 Route::get('/', [HomeController::class, 'index'])
     ->name('home');
+
+
+Route::get(
+    '/locations/divisions',
+    [LocationController::class, 'divisions']
+)->name('locations.divisions');
+
+Route::get(
+    '/locations/divisions/{division}/districts',
+    [LocationController::class, 'districts']
+)->name('locations.districts');
+
+Route::get(
+    '/locations/districts/{district}/upazilas',
+    [LocationController::class, 'upazilas']
+)->name('locations.upazilas');
 
 
 /*
@@ -85,12 +104,44 @@ Route::delete(
 |--------------------------------------------------------------------------
 */
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})
-    ->middleware(['auth', 'verified', 'customer'])
-    ->name('dashboard');
 
+
+Route::middleware([
+    'auth',
+    'verified',
+    'customer',
+])
+    ->group(function () {
+        Route::get('/dashboard', function () {
+            return view('dashboard');
+        })->name('dashboard');
+
+        Route::get(
+            '/checkout',
+            [CheckoutController::class, 'index']
+        )->name('checkout.index');
+
+        Route::post(
+            '/checkout',
+            [CheckoutController::class, 'store']
+        )->name('checkout.store');
+
+        Route::get(
+            '/checkout/success/{order}',
+            [CheckoutController::class, 'success']
+        )->name('checkout.success');
+
+        Route::get(
+            '/orders',
+            [OrderController::class, 'index']
+        )->name('orders.index');
+
+        Route::get(
+            '/orders/{order}',
+            [OrderController::class, 'show']
+        )->name('orders.show');
+    }
+);
 
 /*
 |--------------------------------------------------------------------------

@@ -400,7 +400,7 @@
 
 
                         <a
-                            href="#"
+                            href="{{ route('checkout.index') }}"
                             class="mt-6 block w-full rounded-xl
                                    bg-indigo-600 px-6 py-4
                                    text-center text-sm font-bold

@@ -50,6 +50,13 @@
                         >
                             Dashboard
                         </a>
+                        <a
+                            href="{{ route('orders.index') }}"
+                            class="text-sm font-medium text-gray-700
+                                hover:text-teal-600 transition"
+                        >
+                            My Orders
+                        </a>
                     @endif
                 @endauth
                 @auth
