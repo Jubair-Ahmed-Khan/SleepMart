@@ -57,6 +57,15 @@
                         >
                             My Orders
                         </a>
+                        <a
+                            href="{{ route('profile.edit') }}"
+                            class="text-sm font-medium
+                                text-gray-700
+                                hover:text-teal-600
+                                transition"
+                        >
+                            Profile
+                        </a>
                     @endif
                 @endauth
                 @auth

@@ -161,6 +161,11 @@ Route::middleware('auth')->group(function () {
         [ProfileController::class, 'update']
     )->name('profile.update');
 
+    Route::patch(
+        '/profile/password',
+        [ProfileController::class, 'updatePassword']
+    )->name('profile.password.update');
+
     Route::delete(
         '/profile',
         [ProfileController::class, 'destroy']
