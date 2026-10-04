@@ -15,6 +15,9 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\OrderController;
 
+use App\Http\Controllers\Admin\ProductVariantController;
+use App\Http\Controllers\Admin\CategoryController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -196,6 +199,41 @@ Route::middleware(['auth', 'admin'])
         )->name('products.index');
 
         Route::get(
+            '/products/create',
+            [AdminProductController::class, 'create']
+        )->name('products.create');
+
+        Route::post(
+            '/products',
+            [AdminProductController::class, 'store']
+        )->name('products.store');
+
+        Route::get(
+            '/products/{product}',
+            [AdminProductController::class, 'show']
+        )->name('products.show');
+
+        Route::get(
+            '/products/{product}/edit',
+            [AdminProductController::class, 'edit']
+        )->name('products.edit');
+
+        Route::patch(
+            '/products/{product}',
+            [AdminProductController::class, 'update']
+        )->name('products.update');
+
+        Route::patch(
+            '/products/{product}/deactivate',
+            [AdminProductController::class, 'deactivate']
+        )->name('products.deactivate');
+
+        Route::patch(
+            '/products/{product}/activate',
+            [AdminProductController::class, 'activate']
+        )->name('products.activate');
+
+        Route::get(
             '/products/{product}/images',
             [ProductImageController::class, 'index']
         )->name('products.images.index');
@@ -219,6 +257,66 @@ Route::middleware(['auth', 'admin'])
             '/products/{product}/images/{image}',
             [ProductImageController::class, 'destroy']
         )->name('products.images.destroy');
+
+        Route::get(
+            '/products/{product}/variants',
+            [ProductVariantController::class, 'index']
+        )->name('products.variants.index');
+
+        Route::post(
+            '/products/{product}/variants',
+            [ProductVariantController::class, 'store']
+        )->name('products.variants.store');
+
+        Route::patch(
+            '/products/{product}/variants/{variant}',
+            [ProductVariantController::class, 'update']
+        )->name('products.variants.update');
+
+        Route::delete(
+            '/products/{product}/variants/{variant}',
+            [ProductVariantController::class, 'destroy']
+        )->name('products.variants.destroy');
+
+        Route::get(
+            '/categories',
+            [CategoryController::class, 'index']
+        )->name('categories.index');
+
+        Route::get(
+            '/categories/create',
+            [CategoryController::class, 'create']
+        )->name('categories.create');
+
+        Route::post(
+            '/categories',
+            [CategoryController::class, 'store']
+        )->name('categories.store');
+
+        Route::get(
+            '/categories/{category}/edit',
+            [CategoryController::class, 'edit']
+        )->name('categories.edit');
+
+        Route::patch(
+            '/categories/{category}',
+            [CategoryController::class, 'update']
+        )->name('categories.update');
+
+        Route::patch(
+            '/categories/{category}/deactivate',
+            [CategoryController::class, 'deactivate']
+        )->name('categories.deactivate');
+
+        Route::patch(
+            '/categories/{category}/activate',
+            [CategoryController::class, 'activate']
+        )->name('categories.activate');
+
+        Route::delete(
+            '/categories/{category}',
+            [CategoryController::class, 'destroy']
+        )->name('categories.destroy');
     }
 );
 

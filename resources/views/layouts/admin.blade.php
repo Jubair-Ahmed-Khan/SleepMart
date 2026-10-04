@@ -84,6 +84,17 @@
                 </a>
 
                 <a
+                    href="{{ route('admin.categories.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl
+                           {{ request()->routeIs('admin.categories.*')
+                                ? 'bg-teal-600 text-white'
+                                : 'text-gray-300 hover:bg-gray-800' }}"
+                >
+                    <span>🗂️</span>
+                    <span>Categories</span>
+                </a>
+
+                <a
                     href="{{ route('products.index') }}"
                     class="flex items-center gap-3 px-4 py-3 rounded-xl
                            text-gray-300 hover:bg-gray-800"
