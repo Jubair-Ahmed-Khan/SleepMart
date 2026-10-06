@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BdDistrict;
+use App\Models\BdDivision;
+use App\Models\BdUpazila;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -12,14 +15,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
-use App\Models\BdDistrict;
-use App\Models\BdDivision;
-use App\Models\BdUpazila;
-
 class CheckoutController extends Controller
 {
     private const SHIPPING_CHARGE = 100;
 
+    /**
+     * Display the checkout page.
+     */
     public function index(Request $request): View|RedirectResponse
     {
         $cart = $request->session()->get('cart', []);
@@ -31,7 +33,8 @@ class CheckoutController extends Controller
         }
 
         $subtotal = collect($cart)->sum(function ($item) {
-            return (float) $item['price'] * (int) $item['quantity'];
+            return (float) $item['price']
+                * (int) $item['quantity'];
         });
 
         $shippingCharge = self::SHIPPING_CHARGE;
@@ -45,6 +48,9 @@ class CheckoutController extends Controller
         ]);
     }
 
+    /**
+     * Create a new order from the current cart.
+     */
     public function store(Request $request): RedirectResponse
     {
         $cart = $request->session()->get('cart', []);
@@ -55,6 +61,11 @@ class CheckoutController extends Controller
                 ->with('error', 'Your cart is empty.');
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Validate checkout information
+        |--------------------------------------------------------------------------
+        */
         $validated = $request->validate([
             'name' => [
                 'required',
@@ -114,6 +125,22 @@ class CheckoutController extends Controller
                 'Please enter a valid Bangladesh mobile number, for example 01712345678.',
         ]);
 
+        /*
+        |--------------------------------------------------------------------------
+        | Validate Bangladesh location hierarchy
+        |--------------------------------------------------------------------------
+        |
+        | The normal "exists" validation only checks whether the IDs exist.
+        | These additional queries make sure:
+        |
+        | Division
+        |    ↓
+        | District belongs to Division
+        |    ↓
+        | Upazila belongs to District
+        |
+        |--------------------------------------------------------------------------
+        */
         $division = BdDivision::query()
             ->where('id', $validated['division_id'])
             ->where('is_active', true)
@@ -139,6 +166,11 @@ class CheckoutController extends Controller
                 $district,
                 $upazila
             ) {
+                /*
+                |--------------------------------------------------------------------------
+                | Calculate subtotal from cart
+                |--------------------------------------------------------------------------
+                */
                 $subtotal = 0;
 
                 foreach ($cart as $item) {
@@ -149,6 +181,11 @@ class CheckoutController extends Controller
 
                 $shippingCharge = self::SHIPPING_CHARGE;
 
+                /*
+                |--------------------------------------------------------------------------
+                | Create order
+                |--------------------------------------------------------------------------
+                */
                 $order = Order::create([
                     'user_id' => auth()->id(),
 
@@ -167,22 +204,43 @@ class CheckoutController extends Controller
                         $validated['delivery_note'] ?? null,
 
                     'subtotal' => $subtotal,
+
                     'shipping_charge' => $shippingCharge,
-                    'total' => $subtotal + $shippingCharge,
+
+                    'total' =>
+                        $subtotal + $shippingCharge,
 
                     'payment_method' => 'cod',
+
                     'payment_status' => 'pending',
+
                     'order_status' => 'pending',
                 ]);
 
+                /*
+                |--------------------------------------------------------------------------
+                | Create order items and reduce stock
+                |--------------------------------------------------------------------------
+                */
                 foreach ($cart as $item) {
                     $quantity = (int) $item['quantity'];
 
+                    if ($quantity <= 0) {
+                        throw new \RuntimeException(
+                            'Invalid product quantity.'
+                        );
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Lock product row
+                    |--------------------------------------------------------------------------
+                    */
                     $product = Product::query()
                         ->lockForUpdate()
                         ->find($item['product_id']);
 
-                    if (!$product) {
+                    if (!$product || !$product->is_active) {
                         throw new \RuntimeException(
                             'A product in your cart is no longer available.'
                         );
@@ -190,37 +248,108 @@ class CheckoutController extends Controller
 
                     $variant = null;
 
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Variant product
+                    |--------------------------------------------------------------------------
+                    */
                     if (!empty($item['variant_id'])) {
                         $variant = ProductVariant::query()
                             ->lockForUpdate()
-                            ->find($item['variant_id']);
+                            ->where('id', $item['variant_id'])
+                            ->where('product_id', $product->id)
+                            ->first();
 
-                        if (!$variant) {
+                        if (!$variant || !$variant->is_active) {
                             throw new \RuntimeException(
-                                'A selected product option is no longer available.'
+                                "The selected option for {$product->name} is no longer available."
                             );
                         }
 
-                        if (
-                            !$variant->is_active ||
-                            $variant->stock < $quantity
-                        ) {
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Validate variant stock
+                        |--------------------------------------------------------------------------
+                        */
+                        if ($variant->stock < $quantity) {
                             throw new \RuntimeException(
                                 "Insufficient stock for {$product->name}."
                             );
                         }
 
-                        $variant->decrement('stock', $quantity);
-                    } else {
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Validate current variant price
+                        |--------------------------------------------------------------------------
+                        |
+                        | The cart price should not be trusted blindly because
+                        | the product price may have changed after the item
+                        | was added to the cart.
+                        |
+                        |--------------------------------------------------------------------------
+                        */
+                        $currentPrice = (float) $variant->price;
+                        $cartPrice = (float) $item['price'];
+
+                        if (abs($currentPrice - $cartPrice) > 0.001) {
+                            throw new \RuntimeException(
+                                "The price of {$product->name} has changed. Please review your cart before placing the order."
+                            );
+                        }
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Reduce variant stock
+                        |--------------------------------------------------------------------------
+                        */
+                        $variant->decrement(
+                            'stock',
+                            $quantity
+                        );
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Product without variant
+                    |--------------------------------------------------------------------------
+                    */
+                    else {
                         if ($product->stock < $quantity) {
                             throw new \RuntimeException(
                                 "Insufficient stock for {$product->name}."
                             );
                         }
 
-                        $product->decrement('stock', $quantity);
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Validate current product price
+                        |--------------------------------------------------------------------------
+                        */
+                        $currentPrice = (float) $product->selling_price;
+                        $cartPrice = (float) $item['price'];
+
+                        if (abs($currentPrice - $cartPrice) > 0.001) {
+                            throw new \RuntimeException(
+                                "The price of {$product->name} has changed. Please review your cart before placing the order."
+                            );
+                        }
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Reduce product stock
+                        |--------------------------------------------------------------------------
+                        */
+                        $product->decrement(
+                            'stock',
+                            $quantity
+                        );
                     }
 
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Create order item
+                    |--------------------------------------------------------------------------
+                    */
                     OrderItem::create([
                         'order_id' => $order->id,
 
@@ -236,7 +365,8 @@ class CheckoutController extends Controller
                             $variant?->name,
 
                         'sku' =>
-                            $variant?->sku ?? $product->sku,
+                            $variant?->sku
+                            ?? $product->sku,
 
                         'unit_price' =>
                             (float) $item['price'],
@@ -244,13 +374,19 @@ class CheckoutController extends Controller
                         'quantity' => $quantity,
 
                         'subtotal' =>
-                            (float) $item['price'] * $quantity,
+                            (float) $item['price']
+                            * $quantity,
                     ]);
                 }
 
                 return $order;
             });
 
+            /*
+            |--------------------------------------------------------------------------
+            | Clear cart only after successful transaction
+            |--------------------------------------------------------------------------
+            */
             $request->session()->forget('cart');
 
             return redirect()
@@ -272,6 +408,9 @@ class CheckoutController extends Controller
         }
     }
 
+    /**
+     * Display order success page.
+     */
     public function success(Order $order): View
     {
         abort_unless(
@@ -287,6 +426,9 @@ class CheckoutController extends Controller
         );
     }
 
+    /**
+     * Generate a unique SleepMart order number.
+     */
     private function generateOrderNumber(): string
     {
         do {

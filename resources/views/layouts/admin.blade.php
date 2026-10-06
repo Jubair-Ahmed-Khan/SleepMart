@@ -95,6 +95,22 @@
                 </a>
 
                 <a
+                    href="{{ route('admin.orders.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-lg
+                        {{ request()->routeIs('admin.orders.*')
+                            ? 'bg-blue-600 text-white'
+                            : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}"
+                >
+                    <span>
+                        📦
+                    </span>
+
+                    <span>
+                        Orders
+                    </span>
+                </a>
+
+                <a
                     href="{{ route('products.index') }}"
                     class="flex items-center gap-3 px-4 py-3 rounded-xl
                            text-gray-300 hover:bg-gray-800"
@@ -228,7 +244,7 @@
         </div>
 
     </div>
-
+    @stack('scripts')
 </body>
 
 </html>

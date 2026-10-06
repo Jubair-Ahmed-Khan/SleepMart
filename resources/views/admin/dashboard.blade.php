@@ -227,7 +227,7 @@
             </div>
 
             <a
-                href="{{ route('orders.index') }}"
+                href="{{ route('admin.orders.index') }}"
                 class="text-sm font-semibold
                        text-teal-600
                        hover:text-teal-700"

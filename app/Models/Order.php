@@ -36,13 +36,20 @@ class Order extends Model
         'total' => 'decimal:2',
     ];
 
+    /**
+     * Customer who placed the order.
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Items belonging to this order.
+     */
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
     }
 }
+

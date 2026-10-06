@@ -34,7 +34,7 @@
     </div>
 
 
-    @if(session('success'))
+    <!-- @if(session('success'))
 
         <div
             class="p-4 rounded-xl
@@ -45,7 +45,7 @@
             {{ session('success') }}
         </div>
 
-    @endif
+    @endif -->
 
 
     {{-- Add Variant --}}
