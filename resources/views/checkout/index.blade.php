@@ -504,7 +504,7 @@
                                         @endif -->
                                         @if(!empty($item['thumbnail']))
                                             <img
-                                                src="{{ $item['thumbnail'] }}"
+                                                src="{{ asset('storage/' . $item['thumbnail']) }}"
                                                 alt="{{ $item['name'] }}"
                                                 class="h-full w-full object-cover"
                                             >

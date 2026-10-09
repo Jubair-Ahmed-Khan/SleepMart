@@ -391,8 +391,8 @@ class CheckoutController extends Controller
 
             return redirect()
                 ->route(
-                    'checkout.success',
-                    $order
+                    'checkout.success', ['order' => $order->id]
+                    // $order
                 )
                 ->with(
                     'success',

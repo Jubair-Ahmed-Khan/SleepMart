@@ -187,31 +187,31 @@
 
                     <tr>
 
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">
                             Order
                         </th>
 
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">
                             Customer
                         </th>
 
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">
                             Items
                         </th>
 
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">
                             Total
                         </th>
 
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">
                             Payment
                         </th>
 
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">
                             Status
                         </th>
 
-                        <th class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">
                             Action
                         </th>
 
@@ -227,7 +227,7 @@
                         <tr class="hover:bg-gray-50 transition">
 
                             {{-- Order --}}
-                            <td class="px-6 py-5">
+                            <td class="px-6 py-5 text-center">
 
                                 <div class="font-semibold text-gray-900">
                                     {{ $order->order_number }}
@@ -241,7 +241,7 @@
 
 
                             {{-- Customer --}}
-                            <td class="px-6 py-5">
+                            <td class="px-6 py-5 text-center">
 
                                 <div class="font-medium text-gray-900">
                                     {{ $order->name }}
@@ -255,7 +255,7 @@
 
 
                             {{-- Items --}}
-                            <td class="px-6 py-5 text-sm text-gray-700">
+                            <td class="px-6 py-5 text-center text-sm text-gray-700">
 
                                 {{ $order->items->sum('quantity') }}
 
@@ -265,7 +265,7 @@
 
 
                             {{-- Total --}}
-                            <td class="px-6 py-5">
+                            <td class="px-6 py-5 text-center">
 
                                 <span class="font-semibold text-gray-900">
                                     ৳{{ number_format($order->total, 2) }}
@@ -275,7 +275,7 @@
 
 
                             {{-- Payment --}}
-                            <td class="px-6 py-5">
+                            <td class="px-6 py-5 text-center">
 
                                 <div class="text-sm font-medium text-gray-900">
                                     {{ strtoupper(str_replace('_', ' ', $order->payment_method)) }}
@@ -289,7 +289,7 @@
 
 
                             {{-- Status --}}
-                            <td class="px-6 py-5">
+                            <td class="px-6 py-5 text-center">
 
                                 @php
                                     $statusClasses = [
@@ -324,23 +324,34 @@
 
 
                             {{-- Actions --}}
-                            <td class="px-6 py-5 text-right">
+                            <td class="px-6 py-5 text-center">
+                                <div class="flex items-center justify-center gap-1">
 
-                                <div class="flex items-center justify-end gap-2">
-
+                                    {{-- View Order --}}
                                     <a
                                         href="{{ route('admin.orders.show', $order) }}"
-                                        class="inline-flex items-center px-3 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+                                        title="View order"
+                                        aria-label="View order"
+                                        class="inline-flex h-9 w-9 items-center justify-center
+                                              rounded-lg
+                                              text-blue-600 transition
+                                              hover:text-gray-900"
                                     >
-                                        View
+                                        {{-- Eye icon --}}
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            width="18" height="18"
+                                            viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor"
+                                            stroke-width="2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/>
+                                            <circle cx="12" cy="12" r="3"/>
+                                        </svg>
                                     </a>
 
-                                    @if(
-                                        !in_array(
-                                            $order->order_status,
-                                            ['delivered', 'cancelled']
-                                        )
-                                    )
+                                    {{-- Update Order Status --}}
+                                    @if(!in_array($order->order_status, ['delivered', 'cancelled']))
 
                                         <button
                                             type="button"
@@ -349,17 +360,29 @@
                                                 @js($order->order_number),
                                                 @js($order->order_status)
                                             )"
-                                            class="inline-flex items-center px-3 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition"
+                                            title="Update order status"
+                                            aria-label="Update order status"
+                                            class="inline-flex h-9 w-9 items-center justify-center
+                                                  rounded-lg text-green-600
+                                                  transition"
                                         >
-                                            Update
+                                            {{-- Pencil icon --}}
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                width="18" height="18"
+                                                viewBox="0 0 24 24"
+                                                fill="none" stroke="currentColor"
+                                                stroke-width="2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <path d="M12 20h9"/>
+                                                <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L9 17l-4 1 1-4Z"/>
+                                            </svg>
                                         </button>
 
                                     @endif
 
                                 </div>
-
                             </td>
-
                         </tr>
 
                     @empty

@@ -115,7 +115,16 @@
 
     <div class="overflow-x-auto">
 
-        <table class="min-w-full">
+        <table class="w-full min-w-[1150px] table-fixed">
+            <colgroup>
+                <col style="width: 25%">
+                <col style="width: 13%">
+                <col style="width: 12%">
+                <col style="width: 12%">
+                <col style="width: 12%">
+                <col style="width: 10%">
+                <col style="width: 16%">
+            </colgroup>
 
             {{-- Table Header --}}
             <thead class="bg-gray-50 border-b border-gray-200">
@@ -124,7 +133,7 @@
 
                     {{-- Product --}}
                     <th
-                        class="px-6 py-4 text-left text-xs
+                        class="px-6 py-4 text-center text-xs
                                font-semibold text-gray-500 uppercase
                                tracking-wider"
                     >
@@ -133,7 +142,7 @@
 
                     {{-- Category --}}
                     <th
-                        class="px-6 py-4 text-left text-xs
+                        class="px-6 py-4 text-center text-xs
                                font-semibold text-gray-500 uppercase
                                tracking-wider"
                     >
@@ -142,7 +151,7 @@
 
                     {{-- Price --}}
                     <th
-                        class="px-6 py-4 text-left text-xs
+                        class="px-6 py-4 text-center text-xs
                                font-semibold text-gray-500 uppercase
                                tracking-wider"
                     >
@@ -151,7 +160,7 @@
 
                     {{-- Stock --}}
                     <th
-                        class="px-6 py-4 text-left text-xs
+                        class="px-6 py-4 text-center text-xs
                                font-semibold text-gray-500 uppercase
                                tracking-wider"
                     >
@@ -160,7 +169,7 @@
 
                     {{-- Status --}}
                     <th
-                        class="px-6 py-4 text-left text-xs
+                        class="px-6 py-4 text-center text-xs
                                font-semibold text-gray-500 uppercase
                                tracking-wider"
                     >
@@ -169,7 +178,7 @@
 
                     {{-- Images --}}
                     <th
-                        class="px-6 py-4 text-left text-xs
+                        class="px-6 py-4 text-center text-xs
                                font-semibold text-gray-500 uppercase
                                tracking-wider"
                     >
@@ -178,7 +187,7 @@
 
                     {{-- Actions --}}
                     <th
-                        class="px-6 py-4 text-right text-xs
+                        class="px-6 py-4 text-center text-xs
                                font-semibold text-gray-500 uppercase
                                tracking-wider"
                     >
@@ -301,7 +310,7 @@
                         {{-- =========================
                              CATEGORY
                         ========================== --}}
-                        <td class="px-6 py-4 text-sm text-gray-600">
+                        <td class="px-6 py-4 text-sm text-gray-600 text-center">
 
                             {{ $product->category?->name ?? 'N/A' }}
 
@@ -311,7 +320,7 @@
                         {{-- =========================
                              PRICE
                         ========================== --}}
-                        <td class="px-6 py-4">
+                        <td class="px-6 py-4 text-center">
 
                             <div class="font-semibold text-gray-900">
                                 ৳{{ number_format((float) $product->selling_price, 0) }}
@@ -349,94 +358,47 @@
                         {{-- =========================
                              STOCK
                         ========================== --}}
-                        <td class="px-6 py-4">
+                        <td class="px-4 py-4 align-middle">
 
-                            @if($variantCount > 0)
-
-                                {{-- Variant Based Stock --}}
+                            <div class="flex flex-col justify-center items-center gap-1.5">
 
                                 @if($displayStock <= 0)
 
-                                    <span
-                                        class="inline-flex px-3 py-1
-                                               rounded-full
-                                               bg-red-50 text-red-700
-                                               text-xs font-semibold"
-                                    >
+                                    <span class="inline-flex whitespace-nowrap rounded-full
+                                                bg-red-50 px-3 py-1 text-xs font-semibold
+                                                text-red-700">
                                         Out of Stock
                                     </span>
 
                                 @elseif($displayStock <= 5)
 
-                                    <span
-                                        class="inline-flex px-3 py-1
-                                               rounded-full
-                                               bg-orange-50 text-orange-700
-                                               text-xs font-semibold"
-                                    >
+                                    <span class="inline-flex whitespace-nowrap rounded-full
+                                                bg-orange-50 px-3 py-1 text-xs font-semibold
+                                                text-orange-700">
                                         {{ $displayStock }} left
                                     </span>
 
                                 @else
 
-                                    <span
-                                        class="inline-flex px-3 py-1
-                                               rounded-full
-                                               bg-blue-50 text-blue-700
-                                               text-xs font-semibold"
-                                    >
-                                        {{ $displayStock }} total
-                                    </span>
-
-                                @endif
-
-                                <div
-                                    class="mt-1 text-xs text-gray-400"
-                                >
-                                    {{ $variantCount }}
-                                    {{ $variantCount === 1 ? 'variant' : 'variants' }}
-                                </div>
-
-                            @else
-
-                                {{-- Normal Product Stock --}}
-
-                                @if($displayStock <= 0)
-
-                                    <span
-                                        class="inline-flex px-3 py-1
-                                               rounded-full
-                                               bg-red-50 text-red-700
-                                               text-xs font-semibold"
-                                    >
-                                        Out of Stock
-                                    </span>
-
-                                @elseif($displayStock <= 5)
-
-                                    <span
-                                        class="inline-flex px-3 py-1
-                                               rounded-full
-                                               bg-orange-50 text-orange-700
-                                               text-xs font-semibold"
-                                    >
-                                        {{ $displayStock }} left
-                                    </span>
-
-                                @else
-
-                                    <span
-                                        class="inline-flex px-3 py-1
-                                               rounded-full
-                                               bg-green-50 text-green-700
-                                               text-xs font-semibold"
-                                    >
+                                    <span class="inline-flex whitespace-nowrap rounded-full
+                                                {{ $variantCount > 0
+                                                    ? 'bg-blue-50 text-blue-700'
+                                                    : 'bg-green-50 text-green-700' }}
+                                                px-3 py-1 text-xs font-semibold">
                                         {{ $displayStock }}
+                                        {{ $variantCount > 0 ? 'total' : '' }}
                                     </span>
 
                                 @endif
 
-                            @endif
+                                @if($variantCount > 0)
+                                    <span class="whitespace-nowrap text-xs text-gray-400">
+                                        {{ $variantCount }}
+                                        {{ $variantCount === 1 ? 'variant' : 'variants' }}
+                                    </span>
+                                @endif
+
+                            </div>
 
                         </td>
 
@@ -444,7 +406,7 @@
                         {{-- =========================
                              STATUS
                         ========================== --}}
-                        <td class="px-6 py-4">
+                        <td class="px-6 py-4 text-center">
 
                             @if($product->is_active)
 
@@ -488,114 +450,102 @@
                         {{-- =========================
                              IMAGES
                         ========================== --}}
-                        <td class="px-6 py-4">
-
-                            <span
-                                class="inline-flex items-center
-                                       px-3 py-1 rounded-full
-                                       bg-gray-100 text-gray-700
-                                       text-xs font-semibold"
-                            >
-                                {{ $product->images->count() }}
-
-                                {{ $product->images->count() === 1
-                                    ? 'image'
-                                    : 'images'
-                                }}
-                            </span>
-
+                        <td class="px-4 py-4 text-center"> 
+                            <span class="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700"> 
+                                {{ $product->images->count() }} 
+                                {{ $product->images->count() === 1 ? 'image' : 'images' }} 
+                            </span> 
                         </td>
 
 
                         {{-- =========================
                              ACTIONS
                         ========================== --}}
-                        <td class="px-6 py-4">
+                        <td class="px-4 py-4 align-middle">
 
-                            <div
-                                class="flex items-center justify-end
-                                       gap-2 flex-wrap"
-                            >
+                            <div class="grid grid-cols-2 gap-2 w-fit mx-auto">
 
                                 {{-- View --}}
                                 <a
-                                    href="{{ route(
-                                        'admin.products.show',
-                                        $product
-                                    ) }}"
-                                    class="inline-flex items-center
-                                           px-3 py-2 rounded-lg
-                                           bg-gray-100
-                                           text-gray-700
-                                           text-xs font-semibold
-                                           hover:bg-gray-200
-                                           transition"
+                                    href="{{ route('admin.products.show', $product) }}"
+                                    title="View product"
+                                    aria-label="View product"
+                                    class="flex h-9 w-9 items-center justify-center
+                                        rounded-lg bg-gray-100 text-gray-700
+                                        transition hover:bg-gray-200"
                                 >
-                                    View
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        width="18" height="18" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
                                 </a>
-
 
                                 {{-- Edit --}}
                                 <a
-                                    href="{{ route(
-                                        'admin.products.edit',
-                                        $product
-                                    ) }}"
-                                    class="inline-flex items-center
-                                           px-3 py-2 rounded-lg
-                                           bg-teal-50
-                                           text-teal-700
-                                           text-xs font-semibold
-                                           hover:bg-teal-100
-                                           transition"
+                                    href="{{ route('admin.products.edit', $product) }}"
+                                    title="Edit product"
+                                    aria-label="Edit product"
+                                    class="flex h-9 w-9 items-center justify-center
+                                        rounded-lg bg-teal-50 text-teal-700
+                                        transition hover:bg-teal-100"
                                 >
-                                    Edit
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        width="18" height="18" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M12 20h9"/>
+                                        <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L9 17l-4 1 1-4Z"/>
+                                    </svg>
                                 </a>
-
 
                                 {{-- Variants --}}
                                 <a
-                                    href="{{ route(
-                                        'admin.products.variants.index',
-                                        $product
-                                    ) }}"
-                                    class="inline-flex items-center
-                                           px-3 py-2 rounded-lg
-                                           bg-indigo-50
-                                           text-indigo-700
-                                           text-xs font-semibold
-                                           hover:bg-indigo-100
-                                           transition"
+                                    href="{{ route('admin.products.variants.index', $product) }}"
+                                    title="Manage variants"
+                                    aria-label="Manage variants"
+                                    class="flex h-9 w-9 items-center justify-center
+                                        rounded-lg bg-indigo-50 text-indigo-700
+                                        transition hover:bg-indigo-100"
                                 >
-                                    Variants
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        width="18" height="18" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="m12 3 9 5-9 5-9-5 9-5Z"/>
+                                        <path d="m3 12 9 5 9-5"/>
+                                        <path d="m3 16 9 5 9-5"/>
+                                    </svg>
                                 </a>
-
 
                                 {{-- Gallery --}}
                                 <a
-                                    href="{{ route(
-                                        'admin.products.images.index',
-                                        $product
-                                    ) }}"
-                                    class="inline-flex items-center
-                                           px-3 py-2 rounded-lg
-                                           bg-purple-50
-                                           text-purple-700
-                                           text-xs font-semibold
-                                           hover:bg-purple-100
-                                           transition"
+                                    href="{{ route('admin.products.images.index', $product) }}"
+                                    title="Manage images"
+                                    aria-label="Manage images"
+                                    class="flex h-9 w-9 items-center justify-center
+                                        rounded-lg bg-purple-50 text-purple-700
+                                        transition hover:bg-purple-100"
                                 >
-                                    Gallery
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        width="18" height="18" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                                        <path d="m21 15-5-5L5 21"/>
+                                    </svg>
                                 </a>
 
-
-                                {{-- =========================
-                                     ACTIVATE / DEACTIVATE
-                                ========================== --}}
-
+                                {{-- Activate / Deactivate --}}
                                 @if($product->is_active)
 
-                                    {{-- Deactivate Button --}}
                                     <button
                                         type="button"
                                         onclick="openProductStatusModal(
@@ -603,20 +553,24 @@
                                             '{{ $product->id }}',
                                             @js($product->name)
                                         )"
-                                        class="inline-flex items-center
-                                               px-3 py-2 rounded-lg
-                                               bg-red-50
-                                               text-red-700
-                                               text-xs font-semibold
-                                               hover:bg-red-100
-                                               transition"
+                                        title="Deactivate product"
+                                        aria-label="Deactivate product"
+                                        class="flex h-9 w-9 items-center justify-center
+                                            rounded-lg bg-orange-50 text-orange-700
+                                            transition hover:bg-orange-100"
                                     >
-                                        Deactivate
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            width="18" height="18" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor"
+                                            stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path d="M12 2v10"/>
+                                            <path d="M18.4 6.6a9 9 0 1 1-12.8 0"/>
+                                        </svg>
                                     </button>
 
                                 @else
 
-                                    {{-- Activate Button --}}
                                     <button
                                         type="button"
                                         onclick="openProductStatusModal(
@@ -624,15 +578,20 @@
                                             '{{ $product->id }}',
                                             @js($product->name)
                                         )"
-                                        class="inline-flex items-center
-                                               px-3 py-2 rounded-lg
-                                               bg-green-50
-                                               text-green-700
-                                               text-xs font-semibold
-                                               hover:bg-green-100
-                                               transition"
+                                        title="Activate product"
+                                        aria-label="Activate product"
+                                        class="flex h-9 w-9 items-center justify-center
+                                            rounded-lg bg-green-50 text-green-700
+                                            transition hover:bg-green-100"
                                     >
-                                        Activate
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            width="18" height="18" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor"
+                                            stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <path d="m9 12 2 2 4-4"/>
+                                        </svg>
                                     </button>
 
                                 @endif
@@ -640,7 +599,6 @@
                             </div>
 
                         </td>
-
                     </tr>
 
                 @empty

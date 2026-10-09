@@ -248,23 +248,23 @@
 
                         <tr>
 
-                            <th class="px-6 py-4 text-left font-semibold text-gray-600">
+                            <th class="px-6 py-4 text-center font-semibold text-gray-600">
                                 Order
                             </th>
 
-                            <th class="px-6 py-4 text-left font-semibold text-gray-600">
+                            <th class="px-6 py-4 text-center font-semibold text-gray-600">
                                 Customer
                             </th>
 
-                            <th class="px-6 py-4 text-left font-semibold text-gray-600">
+                            <th class="px-6 py-4 text-center font-semibold text-gray-600">
                                 Total
                             </th>
 
-                            <th class="px-6 py-4 text-left font-semibold text-gray-600">
+                            <th class="px-6 py-4 text-center font-semibold text-gray-600">
                                 Status
                             </th>
 
-                            <th class="px-6 py-4 text-left font-semibold text-gray-600">
+                            <th class="px-6 py-4 text-center font-semibold text-gray-600">
                                 Date
                             </th>
 
@@ -279,7 +279,7 @@
 
                             <tr class="hover:bg-gray-50">
 
-                                <td class="px-6 py-4">
+                                <td class="px-6 py-4 text-center">
 
                                     <span class="font-semibold text-gray-900">
                                         {{ $order->order_number }}
@@ -288,7 +288,7 @@
                                 </td>
 
 
-                                <td class="px-6 py-4">
+                                <td class="px-6 py-4 text-center">
 
                                     <p class="font-medium text-gray-900">
                                         {{ $order->name }}
@@ -301,12 +301,12 @@
                                 </td>
 
 
-                                <td class="px-6 py-4 font-semibold">
+                                <td class="px-6 py-4 font-semibold text-center">
                                     ৳{{ number_format((float) $order->total, 0) }}
                                 </td>
 
 
-                                <td class="px-6 py-4">
+                                <td class="px-6 py-4 text-center">
 
                                     @php
                                         $statusClasses = match ($order->order_status) {
@@ -331,7 +331,7 @@
                                 </td>
 
 
-                                <td class="px-6 py-4 text-gray-500">
+                                <td class="px-6 py-4 text-center text-gray-500">
                                     {{ $order->created_at->format('d M Y') }}
                                 </td>
 
