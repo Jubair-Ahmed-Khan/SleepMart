@@ -95,6 +95,17 @@
                 </a>
 
                 <a
+                    href="{{ route('admin.coupons.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl
+                           {{ request()->routeIs('admin.coupons.*')
+                                ? 'bg-teal-600 text-white'
+                                : 'text-gray-300 hover:bg-gray-800' }}"
+                >
+                    <span>🏷️</span>
+                    <span>Coupons</span>
+                </a>
+
+                <a
                     href="{{ route('admin.orders.index') }}"
                     class="flex items-center gap-3 px-4 py-3 rounded-lg
                         {{ request()->routeIs('admin.orders.*')

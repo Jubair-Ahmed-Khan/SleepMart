@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use App\Models\Coupon;
 
 class CheckoutController extends Controller
 {
@@ -38,13 +39,31 @@ class CheckoutController extends Controller
         });
 
         $shippingCharge = self::SHIPPING_CHARGE;
-        $total = $subtotal + $shippingCharge;
+        // $total = $subtotal + $shippingCharge;
+
+        $coupon = null; 
+        $discountAmount = 0; 
+        
+        $couponCode = $request->session()->get('coupon_code');
+
+        if ($couponCode) { 
+            $coupon = Coupon::query() ->validNow() ->where('code', $couponCode) ->first(); 
+            if ( !$coupon || $subtotal < (float) $coupon->minimum_order ) { 
+                $request->session()->forget('coupon_code'); $coupon = null; 
+            } else { 
+                $discountAmount = $coupon->calculateDiscount( (float) $subtotal ); 
+            } 
+        }
+
+        $total = max( 0, $subtotal + $shippingCharge - $discountAmount );
 
         return view('checkout.index', [
             'cart' => $cart,
             'subtotal' => $subtotal,
             'shippingCharge' => $shippingCharge,
             'total' => $total,
+            'coupon' => $coupon,
+            'discountAmount' => $discountAmount,
         ]);
     }
 
@@ -158,13 +177,16 @@ class CheckoutController extends Controller
             ->where('is_active', true)
             ->firstOrFail();
 
+        $couponCode = $request->session()->get('coupon_code');
+
         try {
             $order = DB::transaction(function () use (
                 $cart,
                 $validated,
                 $division,
                 $district,
-                $upazila
+                $upazila,
+                $couponCode
             ) {
                 /*
                 |--------------------------------------------------------------------------
@@ -180,6 +202,36 @@ class CheckoutController extends Controller
                 }
 
                 $shippingCharge = self::SHIPPING_CHARGE;
+
+                $coupon = null;
+                $discountAmount = 0;
+
+                if ($couponCode) {
+                    $coupon = Coupon::query()
+                        ->validNow()
+                        ->where('code', $couponCode)
+                        ->first();
+
+                    if (!$coupon) {
+                        throw new \RuntimeException(
+                            'Your coupon is no longer valid. Please apply it again.'
+                        );
+                    }
+
+                    if ($subtotal < (float) $coupon->minimum_order) {
+                        throw new \RuntimeException(
+                            'Your order no longer meets the minimum amount for this coupon.'
+                        );
+                    }
+
+                    $discountAmount = $coupon->calculateDiscount(
+                        (float) $subtotal
+                    );
+                }
+
+                $total = max(0, $subtotal + $shippingCharge - $discountAmount);
+
+
 
                 /*
                 |--------------------------------------------------------------------------
@@ -207,14 +259,16 @@ class CheckoutController extends Controller
 
                     'shipping_charge' => $shippingCharge,
 
-                    'total' =>
-                        $subtotal + $shippingCharge,
+                    'total' => $total,
 
                     'payment_method' => 'cod',
 
                     'payment_status' => 'pending',
 
                     'order_status' => 'pending',
+                    'coupon_id' => $coupon?->id,
+                    'coupon_code' => $coupon?->code,
+                    'discount_amount' => $discountAmount,
                 ]);
 
                 /*
@@ -388,6 +442,7 @@ class CheckoutController extends Controller
             |--------------------------------------------------------------------------
             */
             $request->session()->forget('cart');
+            $request->session()->forget(['cart', 'coupon_code',]);
 
             return redirect()
                 ->route(
@@ -448,4 +503,73 @@ class CheckoutController extends Controller
 
         return $number;
     }
+
+
+    public function applyCoupon(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'coupon_code' => [
+                'required',
+                'string',
+                'max:50',
+            ],
+        ]);
+
+        $cart = $request->session()->get('cart', []);
+
+        if (empty($cart)) {
+            return redirect()
+                ->route('cart.index')
+                ->with('error', 'Your cart is empty.');
+        }
+
+        $subtotal = collect($cart)->sum(function ($item) {
+            return (float) $item['price'] * (int) $item['quantity'];
+        });
+
+        $code = strtoupper(trim($validated['coupon_code']));
+
+        $coupon = Coupon::query()
+            ->validNow()
+            ->where('code', $code)
+            ->first();
+
+        if (!$coupon) {
+            return back()->withErrors([
+                'coupon_code' => 'This coupon is invalid, inactive, or expired.',
+            ])->withInput();
+        }
+
+        if ($subtotal < (float) $coupon->minimum_order) {
+            return back()->withErrors([
+                'coupon_code' => 'Your order must be at least ৳'
+                    . number_format((float) $coupon->minimum_order, 2)
+                    . ' to use this coupon.',
+            ])->withInput();
+        }
+
+        $discount = $coupon->calculateDiscount((float) $subtotal);
+
+        if ($discount <= 0) {
+            return back()->withErrors([
+                'coupon_code' => 'This coupon cannot be applied to your order.',
+            ])->withInput();
+        }
+
+        $request->session()->put('coupon_code', $coupon->code);
+
+        return redirect()
+            ->route('checkout.index')
+            ->with('success', 'Coupon ' . $coupon->code . ' applied successfully.');
+    }
+
+    public function removeCoupon(Request $request): RedirectResponse
+    {
+        $request->session()->forget('coupon_code');
+
+        return redirect()
+            ->route('checkout.index')
+            ->with('success', 'Coupon removed.');
+    }
+
 }

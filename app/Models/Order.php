@@ -28,6 +28,9 @@ class Order extends Model
         'payment_method',
         'payment_status',
         'order_status',
+        'coupon_id',
+        'coupon_code',
+        'discount_amount'
     ];
 
     protected $casts = [

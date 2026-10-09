@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\ProductImageController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\CouponController;
 
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\LocationController;
@@ -144,6 +145,9 @@ Route::middleware([
             '/orders/{order}',
             [OrderController::class, 'show']
         )->name('orders.show');
+
+        Route::post('/checkout/coupon', [ CheckoutController::class, 'applyCoupon', ])->name('checkout.coupon.apply'); 
+        Route::delete('/checkout/coupon', [ CheckoutController::class, 'removeCoupon', ])->name('checkout.coupon.remove');
     }
 );
 
@@ -327,6 +331,8 @@ Route::middleware(['auth', 'admin'])
 
         Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])
             ->name('orders.status.update');
+
+        Route::resource('coupons', CouponController::class) ->except(['show']) ->names('coupons');
     }
 );
 
