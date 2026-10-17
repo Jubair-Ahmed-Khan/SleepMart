@@ -20,6 +20,9 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\CategoryController;
 
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -178,6 +181,10 @@ Route::middleware('auth')->group(function () {
         '/profile',
         [ProfileController::class, 'destroy']
     )->name('profile.destroy');
+    Route::post(
+        '/product/{product:slug}/reviews',
+        [ReviewController::class, 'store']
+    )->name('products.reviews.store');
 });
 
 
@@ -333,6 +340,18 @@ Route::middleware(['auth', 'admin'])
             ->name('orders.status.update');
 
         Route::resource('coupons', CouponController::class) ->except(['show']) ->names('coupons');
+
+        Route::get('/reviews', [AdminReviewController::class, 'index'])
+            ->name('reviews.index');
+
+        Route::patch('/reviews/{review}/approve', [AdminReviewController::class, 'approve'])
+            ->name('reviews.approve');
+
+        Route::patch('/reviews/{review}/reject', [AdminReviewController::class, 'reject'])
+            ->name('reviews.reject');
+
+        Route::delete('/reviews/{review}', [AdminReviewController::class, 'destroy'])
+            ->name('reviews.destroy');
     }
 );
 

@@ -438,11 +438,7 @@
                     : $product->stock > 0;
             @endphp
             
-            <form
-                action="{{ route('cart.add', ['product' => $product->slug]) }}"
-                method="POST"
-                class="space-y-5"
-            >
+            <form action="{{ route('cart.add', ['product' => $product->slug]) }}" method="POST" class="space-y-5">
                 @csrf
 
 
@@ -615,64 +611,35 @@
                                 Available sizes can be selected above.
                             </p>
                         </div>
-
                     @else
-
-                        <div
-                            class="rounded-xl border border-red-200
-                                  bg-red-50 px-4 py-3"
-                        >
-                            <p
-                                class="text-sm font-semibold text-red-700"
-                            >
+                        <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3">
+                            <p class="text-sm font-semibold text-red-700">
                                 Currently Out of Stock
                             </p>
-
-                            <p
-                                class="mt-1 text-xs text-red-600"
-                            >
+                            <p class="mt-1 text-xs text-red-600">
                                 All available sizes are currently out of stock.
                             </p>
                         </div>
-
                     @endif
-
                 @else
-
                     @if($product->stock > 0)
-
-                        <div
-                            class="rounded-xl border border-green-200
-                                  bg-green-50 px-4 py-3"
-                        >
-                            <p
-                                class="text-sm font-semibold text-green-700"
-                            >
+                        <div class="rounded-xl border border-green-200 bg-green-50 px-4 py-3">
+                            <p class="text-sm font-semibold text-green-700">
                                 ✓ In Stock
                             </p>
-
-                            <p
-                                class="mt-1 text-xs text-green-600"
-                            >
+                            <p class="mt-1 text-xs text-green-600">
                                 {{ $product->stock }} item(s) available.
                             </p>
                         </div>
-
                     @else
-
-                        <div
-                            class="rounded-xl border border-red-200
-                                  bg-red-50 px-4 py-3"
-                        >
+                        <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3">
                             <p
                                 class="text-sm font-semibold text-red-700"
                             >
                                 Currently Out of Stock
                             </p>
                         </div>
-
                     @endif
-
                 @endif
 
 
@@ -703,15 +670,11 @@
 
                 @else
 
-                    <button
-                        type="button"
-                        disabled
-                        class="flex w-full cursor-not-allowed
+                    <button type="button" disabled class="flex w-full cursor-not-allowed
                               items-center justify-center
                               gap-2 rounded-xl bg-gray-300
                               px-6 py-4 text-sm font-bold
-                              text-gray-500"
-                    >
+                              text-gray-500">
                         <span class="text-lg">
                             🚫
                         </span>
@@ -832,23 +795,11 @@
     {{-- PRODUCT DESCRIPTION --}}
     {{-- ============================================================= --}}
 
-    <div
-        class="mt-10 rounded-2xl bg-white
-               p-6 shadow-sm sm:p-8"
-    >
-
-        <h2
-            class="text-2xl font-bold text-gray-900"
-        >
+    <div class="mt-10 rounded-2xl bg-white p-6 shadow-sm sm:p-8">
+        <h2 class="text-2xl font-bold text-gray-900">
             Product Description
         </h2>
-
-
-        <div
-            class="prose prose-gray mt-5 max-w-none
-                   leading-7 text-gray-600"
-        >
-
+        <div class="prose prose-gray mt-5 max-w-none leading-7 text-gray-600">
             @if($product->description)
 
                 {!! nl2br(e($product->description)) !!}
@@ -863,7 +814,6 @@
             @endif
 
         </div>
-
     </div>
 
 
@@ -871,22 +821,14 @@
     {{-- PRODUCT INFORMATION --}}
     {{-- ============================================================= --}}
 
-    <div
-        class="mt-6 rounded-2xl bg-white
-               p-6 shadow-sm sm:p-8"
-    >
-
+    <div class="mt-6 rounded-2xl bg-white p-6 shadow-sm sm:p-8">
         <h2
             class="text-2xl font-bold text-gray-900"
         >
             Product Information
         </h2>
 
-
-        <div
-            class="mt-6 grid grid-cols-1 gap-4
-                   sm:grid-cols-2 lg:grid-cols-3"
-        >
+        <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 
             @if($product->sku)
 
@@ -970,72 +912,268 @@
 
     @if($relatedProducts->count())
 
-        <section class="mt-12">
+    <section class="mt-12">
 
-            <div
-                class="mb-6 flex items-end
-                       justify-between gap-4"
-            >
+        <div
+            class="mb-6 flex items-end
+                    justify-between gap-4"
+        >
 
-                <div>
+            <div>
 
-                    <p
-                        class="text-sm font-semibold
-                               text-indigo-600"
-                    >
-                        You may also like
-                    </p>
-
-                    <h2
-                        class="mt-1 text-2xl font-bold
-                               text-gray-900"
-                    >
-                        Related Products
-                    </h2>
-
-                </div>
-
-
-                <a
-                    href="{{ route(
-                        'products.index',
-                        [
-                            'category' =>
-                                $product->category?->slug
-                        ]
-                    ) }}"
-                    class="hidden text-sm font-semibold
-                           text-indigo-600
-                           hover:text-indigo-700
-                           sm:block"
+                <p
+                    class="text-sm font-semibold
+                            text-indigo-600"
                 >
-                    View All
-                </a>
+                    You may also like
+                </p>
+
+                <h2
+                    class="mt-1 text-2xl font-bold
+                            text-gray-900"
+                >
+                    Related Products
+                </h2>
 
             </div>
 
 
-            <div
-                class="grid grid-cols-1 gap-6
-                       sm:grid-cols-2
-                       lg:grid-cols-4"
+            <a
+                href="{{ route(
+                    'products.index',
+                    [
+                        'category' =>
+                            $product->category?->slug
+                    ]
+                ) }}"
+                class="hidden text-sm font-semibold
+                        text-indigo-600
+                        hover:text-indigo-700
+                        sm:block"
             >
+                View All
+            </a>
 
-                @foreach($relatedProducts as $relatedProduct)
+        </div>
 
-                    <x-product-card
-                        :product="$relatedProduct"
-                    />
 
-                @endforeach
+        <div
+            class="grid grid-cols-1 gap-6
+                    sm:grid-cols-2
+                    lg:grid-cols-4"
+        >
 
-            </div>
+            @foreach($relatedProducts as $relatedProduct)
 
-        </section>
+                <x-product-card
+                    :product="$relatedProduct"
+                />
+
+            @endforeach
+
+        </div>
+
+    </section>
 
     @endif
 
+    {{-- Customer Reviews & Ratings --}}
+    <section id="reviews" class="mt-12 rounded-2xl border border-gray-200 bg-white p-6 sm:p-8">
+
+        @php
+            $approvedReviews = $product->approvedReviews()
+                ->with('user')
+                ->latest()
+                ->get();
+
+            $averageRating = $approvedReviews->avg('rating') ?? 0;
+            $reviewCount = $approvedReviews->count();
+        @endphp
+
+        {{-- Rating Summary --}}
+        <div class="border-b border-gray-200 pb-6">
+            <h2 class="text-2xl font-bold text-gray-900">
+                Customer Reviews
+            </h2>
+
+            <div class="mt-4 flex flex-wrap items-center gap-4">
+                <div class="text-4xl font-bold text-gray-900">
+                    {{ number_format($averageRating, 1) }}
+                    <span class="text-base font-medium text-gray-500">/ 5</span>
+                </div>
+
+                <div>
+                    <div class="flex items-center gap-1" aria-label="{{ number_format($averageRating, 1) }} out of 5 stars">
+                        @for($star = 1; $star <= 5; $star++)
+                            <span class="{{ $star <= round($averageRating) ? 'text-yellow-400' : 'text-gray-300' }} text-2xl">
+                                ★
+                            </span>
+                        @endfor
+                    </div>
+
+                    <p class="mt-1 text-sm text-gray-500">
+                        Based on {{ $reviewCount }}
+                        {{ \Illuminate\Support\Str::plural('review', $reviewCount) }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {{-- Status Messages --}}
+        @if(session('success'))
+            <div class="mt-5 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-800">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if($errors->has('review'))
+            <div class="mt-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                {{ $errors->first('review') }}
+            </div>
+        @endif
+
+        {{-- Write Review --}}
+        <div class="mt-6 rounded-xl bg-gray-50 p-5">
+            <h3 class="text-lg font-bold text-gray-900">
+                Write a Review
+            </h3>
+
+            <p class="mt-1 text-sm text-gray-600">
+                Only customers with a delivered order containing this product can submit a review.
+            </p>
+
+            @auth
+                <form
+                    method="POST"
+                    action="{{ route('products.reviews.store', ['product' => $product->slug]) }}"
+                    class="mt-5 space-y-5"
+                >
+                    @csrf
+
+                    {{-- Star Rating --}}
+                    <fieldset>
+                        <legend class="mb-2 text-sm font-semibold text-gray-700">
+                            Your Rating <span class="text-red-500">*</span>
+                        </legend>
+
+                        <div class="flex flex-row-reverse justify-end gap-1">
+                            @for($star = 5; $star >= 1; $star--)
+                                <input
+                                    id="rating-{{ $star }}"
+                                    type="radio"
+                                    name="rating"
+                                    value="{{ $star }}"
+                                    required
+                                    class="peer sr-only"
+                                    {{ (string) old('rating') === (string) $star ? 'checked' : '' }}
+                                >
+
+                                <label
+                                    for="rating-{{ $star }}"
+                                    class="cursor-pointer text-3xl text-gray-300 transition hover:text-yellow-400 peer-checked:text-yellow-400"
+                                    title="{{ $star }} {{ \Illuminate\Support\Str::plural('star', $star) }}"
+                                >
+                                    ★
+                                </label>
+                            @endfor
+                        </div>
+
+                        @error('rating')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </fieldset>
+
+                    {{-- Comment --}}
+                    <div>
+                        <label for="review-comment" class="mb-2 block text-sm font-semibold text-gray-700">
+                            Your Review <span class="text-red-500">*</span>
+                        </label>
+
+                        <textarea
+                            id="review-comment"
+                            name="comment"
+                            rows="4"
+                            required
+                            minlength="5"
+                            maxlength="3000"
+                            placeholder="Share your experience with this product..."
+                            class="block w-full rounded-xl border-gray-300 focus:border-teal-500 focus:ring-teal-500"
+                        >{{ old('comment') }}</textarea>
+
+                        @error('comment')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="rounded-xl bg-teal-600 px-6 py-3 font-semibold text-white transition hover:bg-teal-700"
+                    >
+                        Submit Review
+                    </button>
+
+                    <p class="text-xs text-gray-500">
+                        Your review will appear publicly after approval.
+                    </p>
+                </form>
+            @else
+                <div class="mt-5">
+                    <p class="text-sm text-gray-600">
+                        Please log in to write a review. Your purchase will be verified before the review is accepted.
+                    </p>
+
+                    <a
+                        href="{{ route('login') }}"
+                        class="mt-3 inline-block rounded-xl bg-teal-600 px-5 py-3 font-semibold text-white hover:bg-teal-700"
+                    >
+                        Login to Review
+                    </a>
+                </div>
+            @endauth
+        </div>
+
+        {{-- Approved Reviews --}}
+        <div class="mt-8 space-y-6">
+            <h3 class="text-lg font-bold text-gray-900">
+                What Customers Say
+            </h3>
+
+            @forelse($approvedReviews as $review)
+                <article class="border-b border-gray-100 pb-6 last:border-b-0">
+                    <div class="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                            <p class="font-semibold text-gray-900">
+                                {{ $review->user->name ?? 'Verified customer' }}
+                            </p>
+
+                            <p class="mt-1 text-xs text-gray-500">
+                                {{ $review->created_at->format('d M Y') }}
+                            </p>
+                        </div>
+
+                        <div class="flex items-center gap-1" aria-label="{{ $review->rating }} out of 5 stars">
+                            @for($star = 1; $star <= 5; $star++)
+                                <span class="{{ $star <= $review->rating ? 'text-yellow-400' : 'text-gray-300' }} text-lg">
+                                    ★
+                                </span>
+                            @endfor
+                        </div>
+                    </div>
+
+                    <p class="mt-3 whitespace-pre-line text-sm leading-6 text-gray-700">{{ $review->comment }}</p>
+                </article>
+            @empty
+                <p class="rounded-xl border border-dashed border-gray-300 p-6 text-center text-sm text-gray-500">
+                    No approved reviews yet. Be the first eligible customer to share your experience!
+                </p>
+            @endforelse
+        </div>
+
+    </section>
+
 </div>
+
+
 
 
 </div>
