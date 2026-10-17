@@ -130,17 +130,35 @@
                     <span>View Store</span>
                 </a>
 
-                <a href="{{ route('admin.reviews.index') }}"
-                class="flex items-center gap-3 rounded-lg px-4 py-3 text-gray-700 hover:bg-gray-100">
+                <a 
+                    href="{{ route('admin.reviews.index') }}"
+                    class="flex items-center gap-3 rounded-lg px-4 py-3 
+                    {{ request()->routeIs('admin.reviews.*')
+                            ? 'bg-teal-600 text-white'
+                            : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}"
+                >
+                    
                     <svg xmlns="http://www.w3.org/2000/svg"
                         class="h-5 w-5"
-                        fill="none"
                         viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round"
-                            stroke-linejoin="round"
+                        fill="none">
+
+                        <defs>
+                            <linearGradient id="chatGradient"
+                                x1="0%" y1="0%"
+                                x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#8B5CF6"/>
+                                <stop offset="100%" stop-color="#EC4899"/>
+                            </linearGradient>
+                        </defs>
+
+                        <path
+                            d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-4l-3 3-3-3z"
+                            stroke="url(#chatGradient)"
                             stroke-width="2"
-                            d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-4l-3 3-3-3z"/>
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            fill="#F3E8FF"/>
                     </svg>
                     <span>Review Management</span>
                 </a>
